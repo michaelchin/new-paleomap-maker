@@ -2,26 +2,35 @@
 
 import React, { useEffect } from "react";
 
+import { useDrag } from "../hooks/useDrag";
 import { useDrawCoastlines } from "../hooks/useDrawCoastlines";
 import { useDrawGraticule } from "../hooks/useDrawGraticule";
+import { useGetProjection } from "../hooks/useGetProjection";
 
 /**
  *
  * @param {*} param0
  * @returns
  */
-function D3SVG({ time, projection, svgHeight, svgWidth }) {
+function D3SVG({ time, projName, svgHeight, svgWidth }) {
   const d3SVGRef = React.useRef(null);
 
   useEffect(() => {
-    useDrawCoastlines(d3SVGRef.current, time, projection);
+    let p = useGetProjection(projName, svgHeight, svgWidth);
+
+    useDrawCoastlines(d3SVGRef.current, time, p);
     return () => {};
-  }, [time, projection]);
+  }, [time, projName]);
 
   useEffect(() => {
-    useDrawGraticule(d3SVGRef.current, projection);
+    let p = useGetProjection(projName, svgHeight, svgWidth);
+
+    useDrag(d3SVGRef.current, p);
+
+    useDrawGraticule(d3SVGRef.current, p);
+
     return () => {};
-  }, [projection]);
+  }, [projName]);
 
   return (
     <svg

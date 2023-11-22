@@ -1,13 +1,7 @@
 import * as d3 from "d3";
-import { useGetProjection } from "./useGetProjection";
 
-export const useDrawCoastlines = (svgRef, time, projectionName) => {
+export const useDrawCoastlines = (svgRef, time, projection) => {
   let svg = d3.select(svgRef);
-
-  let svgHeight = svgRef.clientHeight,
-    svgWidth = svgRef.clientWidth;
-
-  var projection = useGetProjection(projectionName, svgHeight, svgWidth);
 
   var path = d3.geoPath().projection(projection);
 

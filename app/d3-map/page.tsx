@@ -6,7 +6,7 @@ import D3SVG from "../components/D3SVG";
 
 export default function D3MapPage() {
   const [time, setTime] = React.useState(100);
-  const [projection, setProjection] = React.useState("Orthographic");
+  const [projName, setProjName] = React.useState("Orthographic");
 
   return (
     <>
@@ -15,12 +15,7 @@ export default function D3MapPage() {
         <Link href="/">Back to home</Link>
       </h2>
 
-      <D3SVG
-        time={time}
-        projection={projection}
-        svgHeight={600}
-        svgWidth={1200}
-      />
+      <D3SVG time={time} projName={projName} svgHeight={600} svgWidth={1200} />
     </>
   );
 }
