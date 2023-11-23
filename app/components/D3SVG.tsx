@@ -1,36 +1,52 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useDrag } from "../hooks/useDrag";
 import { useDrawCoastlines } from "../hooks/useDrawCoastlines";
 import { useDrawGraticule } from "../hooks/useDrawGraticule";
 import { useGetProjection } from "../hooks/useGetProjection";
+import { useZoom } from "../hooks/useZoom";
+
+interface D3SVGPros {
+  time: number;
+  projName: string;
+  svgHeight: number;
+  svgWidth: number;
+}
 
 /**
  *
  * @param {*} param0
  * @returns
  */
-function D3SVG({ time, projName, svgHeight, svgWidth }) {
+const D3SVG: React.FC<D3SVGPros> = ({
+  time,
+  projName,
+  svgHeight,
+  svgWidth,
+}: D3SVGPros) => {
   const d3SVGRef = React.useRef(null);
 
-  useEffect(() => {
-    let p = useGetProjection(projName, svgHeight, svgWidth);
-
-    useDrawCoastlines(d3SVGRef.current, time, p);
-    return () => {};
-  }, [time, projName]);
+  const [projection, setProjection] = useState({
+    name: null,
+    proj: null,
+  });
 
   useEffect(() => {
-    let p = useGetProjection(projName, svgHeight, svgWidth);
+    setProjection({
+      name: projName,
+      proj: useGetProjection(projName, svgHeight, svgWidth),
+    });
+  }, [projName, svgHeight, svgWidth]);
 
-    useDrag(d3SVGRef.current, p);
+  useDrag(d3SVGRef, projection);
 
-    useDrawGraticule(d3SVGRef.current, p);
+  useZoom(d3SVGRef, projection);
 
-    return () => {};
-  }, [projName]);
+  useDrawGraticule(d3SVGRef, projection);
+
+  useDrawCoastlines(d3SVGRef, time, projection);
 
   return (
     <svg
@@ -44,6 +60,6 @@ function D3SVG({ time, projName, svgHeight, svgWidth }) {
       }}
     ></svg>
   );
-}
+};
 
 export default D3SVG;
