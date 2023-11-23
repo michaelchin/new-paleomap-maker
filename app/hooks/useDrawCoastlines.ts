@@ -8,10 +8,8 @@ export const useDrawCoastlines = (svgRef, time, projection) => {
     }
 
     let svg = d3.select(svgRef.current);
-
     var path = d3.geoPath().projection(projection.proj);
-
-    let coastlinsLayer = svg.append("g");
+    svg.selectAll(".coastlines").remove();
 
     d3.json(
       "https://gws.gplates.org/reconstruct/coastlines_low/?time=" +
@@ -20,7 +18,8 @@ export const useDrawCoastlines = (svgRef, time, projection) => {
     ).then(function (data: any) {
       //console.log(data)
 
-      coastlinsLayer.selectAll(".coastline").remove();
+      let coastlinsLayer = svg.append("g").attr("class", "coastlines");
+      //coastlinsLayer.selectAll(".coastline").remove();
       coastlinsLayer
         .selectAll(".coastline")
         .data(data.features)

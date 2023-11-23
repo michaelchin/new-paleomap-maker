@@ -11,7 +11,9 @@ export const useDrawGraticule = (svgRef, projection) => {
 
     var path = d3.geoPath().projection(projection.proj);
 
-    let graticuleLayer = svg.append("g");
+    svg.selectAll(".graticules").remove();
+
+    let graticuleLayer = svg.append("g").attr("class", "graticules");
 
     var graticule = d3.geoGraticule();
     graticuleLayer

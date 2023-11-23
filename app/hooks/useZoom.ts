@@ -16,22 +16,15 @@ export const useZoom = (svgRef, projection) => {
     } else {
       scale0 = (svgWidth - 40) / 4;
     }
-    // zoom and pan
-    var zoom = d3
-      .zoom()
-      //.scale(scale0)
-      //.translate([width / 2, height / 2])
-      //.scaleExtent([scale0, 8 * scale0])
-      .on("zoom", function (event, d) {
-        //console.log(event);
-        projection.proj.scale(scale0 * event.transform.k);
 
-        if (projection.name != "Orthographic") {
-          projection.proj.translate(event.transform.translate());
-        }
+    var zoom = d3.zoom().on("zoom", function (event, d) {
+      //console.log(event);
+      if (event.transform.k > 0.3) {
+        projection.proj.scale(scale0 * event.transform.k);
         let path = d3.geoPath().projection(projection.proj);
         svg.selectAll("path").attr("d", path);
-      });
+      }
+    });
 
     svg.call(zoom);
   }, [projection]);
