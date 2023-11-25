@@ -20,12 +20,7 @@ interface D3SVGPros {
  * @param {*} param0
  * @returns
  */
-const D3SVG: React.FC<D3SVGPros> = ({
-  time,
-  projName,
-  svgHeight,
-  svgWidth,
-}: D3SVGPros) => {
+const D3SVG: React.FC<D3SVGPros> = ({ time, projName }: D3SVGPros) => {
   const d3SVGRef = React.useRef(null);
 
   const [projection, setProjection] = useState({
@@ -36,9 +31,13 @@ const D3SVG: React.FC<D3SVGPros> = ({
   useEffect(() => {
     setProjection({
       name: projName,
-      proj: useGetProjection(projName, svgHeight, svgWidth),
+      proj: useGetProjection(
+        projName,
+        d3SVGRef.current.clientHeight,
+        d3SVGRef.current.clientWidth
+      ),
     });
-  }, [projName, svgHeight, svgWidth]);
+  }, [projName]);
 
   useDrag(d3SVGRef, projection);
 
@@ -52,8 +51,8 @@ const D3SVG: React.FC<D3SVGPros> = ({
     <svg
       ref={d3SVGRef}
       style={{
-        height: svgHeight,
-        width: svgWidth,
+        height: "50vw",
+        width: "100%",
         marginRight: "0px",
         marginLeft: "0px",
         background: "lightgrey",
