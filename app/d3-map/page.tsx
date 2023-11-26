@@ -43,10 +43,10 @@ export default function D3MapPage() {
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-12">
-        <div className="lg:col-span-10">
+        <div className="lg:col-span-9 svg-container">
           <D3SVG time={time} projName={projName} />
         </div>
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3 control-container">
           <ProjSelect
             projName={projName}
             projChangeHandler={projChangeHandler}
@@ -59,7 +59,9 @@ export default function D3MapPage() {
             paleoAge={paleoAge}
             paleoAgeChangeHandler={paleoAgeChangeHandler}
           />
-          <Button disabled={!dirty}>Refresh Map</Button>
+          <Button disabled={!dirty} className="refresh-btn">
+            Refresh Map
+          </Button>
         </div>
       </div>
       <h2>

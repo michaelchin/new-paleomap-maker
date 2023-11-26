@@ -11,8 +11,6 @@ import { useZoom } from "../hooks/useZoom";
 interface D3SVGPros {
   time: number;
   projName: string;
-  svgHeight: number;
-  svgWidth: number;
 }
 
 /**

@@ -1,6 +1,6 @@
 const ProjSelect = ({ projName, projChangeHandler }) => {
   return (
-    <div className="sm:col-span-3">
+    <div className="proj-select">
       <label
         htmlFor="projection"
         className="block text-sm font-medium leading-6 text-gray-900"

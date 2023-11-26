@@ -1,6 +1,6 @@
 const ModelSelect = ({ modelName, modelChangeHandler }) => {
   return (
-    <div className="sm:col-span-3">
+    <div className="model-select">
       <label
         htmlFor="model-select"
         className="block text-sm font-medium leading-6 text-gray-900"
