@@ -46,3 +46,10 @@ img {
   width: 200px;
   margin: 10px auto;
 }
+
+.coastlines {
+  fill-opacity: 1;
+  stroke: blue;
+  stroke-width: 0px;
+  fill: gray;
+}

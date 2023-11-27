@@ -9,7 +9,7 @@ import { useGetProjection } from "../hooks/useGetProjection";
 import { useZoom } from "../hooks/useZoom";
 
 interface D3SVGPros {
-  time: number;
+  paleoAge: number;
   projName: string;
   modelName: string;
   refresh: boolean;
@@ -21,7 +21,7 @@ interface D3SVGPros {
  * @returns
  */
 const D3SVG: React.FC<D3SVGPros> = ({
-  time,
+  paleoAge,
   projName,
   modelName,
   refresh,
@@ -50,7 +50,7 @@ const D3SVG: React.FC<D3SVGPros> = ({
 
   useDrawGraticule(d3SVGRef, projection);
 
-  useDrawCoastlines(d3SVGRef, time, projection, modelName);
+  useDrawCoastlines(d3SVGRef, paleoAge, projection, modelName);
 
   return (
     <svg

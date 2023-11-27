@@ -9,7 +9,6 @@ import PaleoAgeInput from "../components/PaleoAgeInput";
 import ProjSelect from "../components/ProjSelect";
 
 export default function D3MapPage() {
-  const [time, setTime] = React.useState(100);
   const [projName, setProjName] = React.useState("Orthographic");
   const [modelName, setModelName] = React.useState("Muller2019");
   const [paleoAge, setPaleoAge] = React.useState(140);
@@ -56,6 +55,7 @@ export default function D3MapPage() {
    * TODO: get computed CSS?
    * https://github.com/Hypercubed/svgsaver
    * https://github.com/exupero/saveSvgAsPng
+   * https://takuti.me/note/javascript-save-svg-as-image/
    */
   const handleDownloadButtonClicked = () => {
     let svgData = document.getElementById("map-svg").outerHTML;
@@ -78,7 +78,7 @@ export default function D3MapPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12">
         <div className="lg:col-span-9 svg-container">
           <D3SVG
-            time={time}
+            paleoAge={paleoAge}
             projName={projName}
             modelName={modelName}
             refresh={refresh}
