@@ -35,7 +35,8 @@ img {
   padding: 10px;
 }
 
-.refresh-btn {
+.refresh-btn,
+.download-btn {
   margin: 10px auto;
 }
 

@@ -55,6 +55,7 @@ const D3SVG: React.FC<D3SVGPros> = ({
   return (
     <svg
       ref={d3SVGRef}
+      id="map-svg"
       style={{
         aspectRatio: "2/1",
         width: "100%",

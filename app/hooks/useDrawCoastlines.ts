@@ -18,7 +18,7 @@ export const useDrawCoastlines = (svgRef, time, projection, modelName) => {
         modelName +
         "&avoid_map_boundary&min_area=200"
     ).then(function (data: any) {
-      console.log(data);
+      //console.log(data);
 
       let coastlinsLayer = svg.append("g").attr("class", "coastlines");
       //coastlinsLayer.selectAll(".coastline").remove();

@@ -30,34 +30,37 @@ const PaleoAgeInput = ({ paleoAge, paleoAgeChangeHandler }) => {
             />
           </svg>
         </button>
-        <input
-          type="text"
-          id="paleo-age-input"
-          data-input-counter
-          data-input-counter-min="0"
-          data-input-counter-max="410"
-          aria-describedby="helper-text-explanation"
-          className="bg-gray-50 border-x-0 border-gray-300 h-11 font-medium text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pb-6 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="140"
-          required
-        />
-        <div className="absolute bottom-1 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center text-xs text-gray-400 space-x-1 rtl:space-x-reverse">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-
-          <span>PaloeAge</span>
+        <div className="relative">
+          <input
+            type="text"
+            id="paleo-age-input"
+            data-input-counter
+            data-input-counter-min="0"
+            data-input-counter-max="410"
+            aria-describedby="helper-text-explanation"
+            className="bg-gray-50 border-x-0 border-gray-300 h-11 font-medium text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="140"
+            required
+          />
+          <span className="absolute inset-y-0 end-0 top-0 flex items-center pe-1.5 pointer-events-none">
+            Ma
+          </span>
+          <div className="absolute inset-y-0 start-0 top-0 flex items-center ps-1.5 pointer-events-none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
         </div>
         <button
           type="button"

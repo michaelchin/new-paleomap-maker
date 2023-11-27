@@ -52,6 +52,23 @@ export default function D3MapPage() {
     setDirty(false);
   };
 
+  /**
+   * TODO: get computed CSS?
+   * https://github.com/Hypercubed/svgsaver
+   * https://github.com/exupero/saveSvgAsPng
+   */
+  const handleDownloadButtonClicked = () => {
+    let svgData = document.getElementById("map-svg").outerHTML;
+    let svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    let svgUrl = URL.createObjectURL(svgBlob);
+    let downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = "newesttree.svg";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
   return (
     <>
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center">
@@ -82,7 +99,8 @@ export default function D3MapPage() {
           />
           <Button
             disabled={!dirty}
-            className="refresh-btn"
+            className="refresh-btn "
+            size="sm"
             onClick={() => handleRefreshButtonClicked()}
           >
             Refresh Map
@@ -96,6 +114,14 @@ export default function D3MapPage() {
               Map" button to apply changes and redraw the map.
             </div>
           )}
+          <Button
+            className="download-btn"
+            size="sm"
+            color="blue"
+            onClick={() => handleDownloadButtonClicked()}
+          >
+            Download
+          </Button>
         </div>
       </div>
       <h2>
