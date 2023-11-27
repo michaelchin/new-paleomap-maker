@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { useEffect } from "react";
 
-export const useDrawCoastlines = (svgRef, time, projection) => {
+export const useDrawCoastlines = (svgRef, time, projection, modelName) => {
   useEffect(() => {
     if (projection.name == null) {
       return () => {};
@@ -14,9 +14,11 @@ export const useDrawCoastlines = (svgRef, time, projection) => {
     d3.json(
       "https://gws.gplates.org/reconstruct/coastlines_low/?time=" +
         time +
-        "&avoid_map_boundary"
+        "&model=" +
+        modelName +
+        "&avoid_map_boundary&min_area=200"
     ).then(function (data: any) {
-      //console.log(data)
+      console.log(data);
 
       let coastlinsLayer = svg.append("g").attr("class", "coastlines");
       //coastlinsLayer.selectAll(".coastline").remove();
@@ -40,5 +42,5 @@ export const useDrawCoastlines = (svgRef, time, projection) => {
           d3.select(this).style("stroke-width", ".25px");
         });
     });
-  }, [time, projection]);
+  }, [projection]);
 };

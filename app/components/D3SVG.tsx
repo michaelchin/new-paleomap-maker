@@ -11,6 +11,8 @@ import { useZoom } from "../hooks/useZoom";
 interface D3SVGPros {
   time: number;
   projName: string;
+  modelName: string;
+  refresh: boolean;
 }
 
 /**
@@ -18,7 +20,12 @@ interface D3SVGPros {
  * @param {*} param0
  * @returns
  */
-const D3SVG: React.FC<D3SVGPros> = ({ time, projName }: D3SVGPros) => {
+const D3SVG: React.FC<D3SVGPros> = ({
+  time,
+  projName,
+  modelName,
+  refresh,
+}: D3SVGPros) => {
   const d3SVGRef = React.useRef(null);
 
   const [projection, setProjection] = useState({
@@ -35,7 +42,7 @@ const D3SVG: React.FC<D3SVGPros> = ({ time, projName }: D3SVGPros) => {
         d3SVGRef.current.clientWidth
       ),
     });
-  }, [projName]);
+  }, [refresh]);
 
   useDrag(d3SVGRef, projection);
 
@@ -43,13 +50,13 @@ const D3SVG: React.FC<D3SVGPros> = ({ time, projName }: D3SVGPros) => {
 
   useDrawGraticule(d3SVGRef, projection);
 
-  useDrawCoastlines(d3SVGRef, time, projection);
+  useDrawCoastlines(d3SVGRef, time, projection, modelName);
 
   return (
     <svg
       ref={d3SVGRef}
       style={{
-        height: "50vw",
+        aspectRatio: "2/1",
         width: "100%",
         marginRight: "0px",
         marginLeft: "0px",
