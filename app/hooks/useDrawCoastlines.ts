@@ -13,10 +13,11 @@ export const useDrawCoastlines = (svgRef, paleoAge, projection, modelName) => {
 
     d3.json(
       "https://gws.gplates.org/reconstruct/coastlines_low/?time=" +
+        //"http://localhost:18000/reconstruct/coastlines_low/?time=" +
         paleoAge +
         "&model=" +
         modelName +
-        "&avoid_map_boundary&min_area=200"
+        "&avoid_map_boundary&min_area=2000"
     ).then(function (data: any) {
       //console.log(data);
       let coastlinsLayer = svg.append("g").attr("class", "coastlines");

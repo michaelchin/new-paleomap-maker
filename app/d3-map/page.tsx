@@ -138,8 +138,11 @@ export default function D3MapPage() {
           </Button>
         </div>
       </div>
+      <h3 className="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-3xl dark:text-white text-center">
+        {modelName}
+      </h3>
       <div className="ps-5">
-        <h4 className="font-extrabold"> {modelName} Description:</h4>
+        <h4 className="font-extrabold"> Description:</h4>
         <p className="ps-10 pe-10">{currentModelDesc}</p>
       </div>
       <div className="ps-5">
