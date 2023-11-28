@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "flowbite-react";
+import * as d3 from "d3";
+import { Button, List } from "flowbite-react";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import D3SVG from "../components/D3SVG";
@@ -14,12 +15,19 @@ export default function D3MapPage() {
   const [paleoAge, setPaleoAge] = React.useState(140);
   const [dirty, setDirty] = React.useState(false);
   const [refresh, setRefresh] = React.useState(false);
+  const [modelList, setModelList] = React.useState({});
 
   useEffect(() => {
     const onResize = () => {
       setDirty(true);
     };
     window.addEventListener("resize", onResize);
+    d3.json("https://repo.gplates.org/webdav/pmm/models.json").then(function (
+      data: any
+    ) {
+      console.log(data);
+      setModelList(data);
+    });
     return () => {
       window.removeEventListener("resize", onResize);
     };
@@ -68,6 +76,12 @@ export default function D3MapPage() {
     downloadLink.click();
     document.body.removeChild(downloadLink);
   };
+
+  let currentModelDesc = "";
+  let modelNameLowerCase = modelName.toLowerCase();
+  if (modelNameLowerCase in modelList) {
+    currentModelDesc = modelList[modelNameLowerCase]["description"];
+  }
 
   return (
     <>
@@ -123,6 +137,55 @@ export default function D3MapPage() {
             Download
           </Button>
         </div>
+      </div>
+      <div className="ps-5">
+        <h4 className="font-extrabold"> {modelName} Description:</h4>
+        <p className="ps-10 pe-10">{currentModelDesc}</p>
+      </div>
+      <div className="ps-5">
+        <h4 className="font-extrabold"> Download:</h4>
+        <List className="ps-10">
+          {modelNameLowerCase in modelList && (
+            <List.Item>
+              <a
+                href={modelList[modelNameLowerCase]["Rotations"]}
+                className="underline"
+              >
+                Rotations
+              </a>
+            </List.Item>
+          )}
+          {modelNameLowerCase in modelList &&
+            Object.keys(modelList[modelNameLowerCase]["Layers"]).map(
+              (layer, i) => {
+                return (
+                  <List.Item>
+                    <a
+                      href={modelList[modelNameLowerCase]["Layers"][layer]}
+                      className="underline"
+                    >
+                      {layer}
+                    </a>
+                  </List.Item>
+                );
+              }
+            )}
+        </List>
+        <p>
+          It is recommended to use{" "}
+          <a href="https://pypi.org/project/plate-model-manager/">
+            <strong>Plate Model Manager</strong>
+          </a>{" "}
+          to download the reconstruction model.
+        </p>
+        <List className="ps-10 italic">
+          <List.Item>
+            <strong>pip install plate-model-manager</strong>
+          </List.Item>
+          <List.Item>
+            <strong>pmm download {modelName}</strong>
+          </List.Item>
+        </List>
       </div>
       <h2>
         <Link href="/">Back to home</Link>
