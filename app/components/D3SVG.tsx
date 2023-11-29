@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
+import * as d3 from "d3";
 import { useDrag } from "../hooks/useDrag";
 import { useDrawCoastlines } from "../hooks/useDrawCoastlines";
 import { useDrawGraticule } from "../hooks/useDrawGraticule";
@@ -43,6 +44,16 @@ const D3SVG: React.FC<D3SVGPros> = ({
       ),
     });
   }, [refresh]);
+
+  useEffect(() => {
+    let svg = d3.select(d3SVGRef.current);
+    svg
+      .transition()
+      .tween(
+        "resize",
+        window.ResizeObserver ? null : () => () => svg.dispatch("toggle")
+      );
+  }, []);
 
   useDrag(d3SVGRef, projection);
 
