@@ -79,26 +79,17 @@ export default function R12nTreePage() {
 
   const d3R12nTreeSVGRef = React.useRef(null);
 
-  useEffect(() => {
-    const onResize = () => {
-      setDirty(true);
-    };
-    window.addEventListener("resize", onResize);
-    d3.json("https://repo.gplates.org/webdav/pmm/models.json").then(function (
-      data: any
-    ) {
-      setModelList(data);
-    });
-
+  const drawTree = (data) => {
     const root: any = d3.hierarchy(data);
 
     const tree = d3.tree().nodeSize([dx, dy]);
     const diagonal = d3
-      .linkHorizontal()
+      .linkVertical()
       .x((d) => d[0])
       .y((d) => d[1]);
 
     let svg = d3.select(d3R12nTreeSVGRef.current);
+    svg.selectAll("*").remove();
 
     /*
     svg
@@ -135,8 +126,6 @@ export default function R12nTreePage() {
 
     root.descendants().forEach((d: any, i) => {
       d.id = i;
-      d._children = d.children;
-      if (d.depth && d.data.name.length !== 7) d.children = null;
     });
 
     const nodeEnter = node
@@ -147,11 +136,25 @@ export default function R12nTreePage() {
       .attr("stroke-opacity", 1)
       .on("click", (event, d: any) => {});
 
-    nodeEnter
+    /*nodeEnter
       .append("circle")
       .attr("r", 10)
-      .attr("fill", (d: any) => (d._children ? "blue" : "red"))
-      .attr("stroke-width", 10);
+      .attr("fill", (d: any) =>
+        d.children ? "MediumAquaMarine" : "LightSkyBlue"
+      )
+      .attr("stroke-width", 10);*/
+
+    nodeEnter
+      .append("text")
+      .attr("dy", "0.31em")
+      .attr("x", 0)
+      .attr("text-anchor", "middle")
+      .text((d: any) => d.data.name.toString())
+      .clone(true)
+      .lower()
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-width", 3)
+      .attr("stroke", "white");
 
     let viewBox = getViewBox(treeWidth, treeHeight);
     const duration = 2500;
@@ -192,12 +195,101 @@ export default function R12nTreePage() {
       .merge(linkEnter)
       .transition(transition)
       .attr("d", (d: any) => {
-        console.log(d);
         return diagonal({
           source: [d.source.x, d.source.y],
           target: [d.target.x, d.target.y],
         });
       });
+
+    svg.call(
+      d3
+        .zoom()
+        .extent([
+          [viewBox[0], viewBox[1]],
+          [viewBox[2], viewBox[3]],
+        ])
+        .scaleExtent([1, 8])
+        .on("zoom", zoomed)
+    );
+
+    function zoomed({ transform }) {
+      gNode.attr("transform", transform);
+      gLink.attr("transform", transform);
+    }
+  };
+
+  /**
+   *
+   * @param node
+   * @param edges
+   * @returns
+   */
+  const getChildren = (node, edges) => {
+    let children = [];
+    for (let i in edges) {
+      if (edges[i][0] == node) {
+        children.push(edges[i][1]);
+      }
+    }
+    let ret = [];
+    for (let i in children) {
+      ret.push({
+        name: children[i],
+        children: getChildren(children[i], edges),
+      });
+    }
+    return ret;
+  };
+
+  /**
+   *
+   * @param edges
+   * @returns
+   */
+  const findRoots = (edges) => {
+    let parents = [],
+      children = [];
+    for (let i in edges) {
+      parents.push(edges[i][0]);
+      children.push(edges[i][1]);
+    }
+    const parentsSet = new Set(parents);
+    const childrenSet = new Set(children);
+
+    const roots = Array.from(parentsSet).filter((element) => {
+      return !childrenSet.has(element);
+    });
+    return roots;
+  };
+
+  /**
+   *
+   */
+  useEffect(() => {
+    const onResize = () => {
+      setDirty(true);
+    };
+    window.addEventListener("resize", onResize);
+    d3.json("https://repo.gplates.org/webdav/pmm/models.json").then(function (
+      data: any
+    ) {
+      setModelList(data);
+    });
+
+    d3.json(
+      "https://gws.gplates.org/rotation/get_reconstruction_tree_edges/?model=seton2012&level=10&pids=0"
+    ).then(function (edges: any) {
+      console.log(edges);
+
+      let trees = [];
+      let roots: any = findRoots(edges);
+      for (let r in roots) {
+        let nodes = getChildren(roots[r], edges);
+        trees.push({ name: roots[r], children: nodes });
+      }
+      console.log(trees);
+      drawTree(trees[0]);
+    });
 
     return () => {
       window.removeEventListener("resize", onResize);
