@@ -7,20 +7,12 @@ import React, { useEffect } from "react";
 import ModelSelect from "../components/ModelSelect";
 import PaleoAgeInput from "../components/PaleoAgeInput";
 
-var c1 = { name: "c1", children: [] };
-var c2 = { name: "c2", children: [] };
-var c3 = { name: "c3", children: [] };
-var c4 = { name: "c4", children: [c3] };
-var data = { name: "root", children: [c1, c2, c4] };
-
 const dx = 50;
 const dy = 50;
 
 const margin = 50;
 const aspectRatio = [16, 9],
   aspectRatioValue = aspectRatio[0] / aspectRatio[1];
-const minTreeHeight = 800,
-  minTreeWidth = minTreeHeight * aspectRatioValue;
 
 /**
  *
@@ -47,19 +39,12 @@ const getTreeWidthHeight = (root) => {
  * @param treeHeight
  * @returns
  */
-const getViewBox = (treeWidth, treeHeight) => {
-  let tmpWidth = treeHeight * aspectRatioValue;
-  if (tmpWidth < treeWidth) {
-    tmpWidth = treeWidth;
-  }
-  if (tmpWidth < minTreeWidth) {
-    tmpWidth = minTreeWidth;
-  }
+const getViewBox = (treeWidth) => {
   return [
-    -(tmpWidth / 2),
+    -(treeWidth / 2),
     -margin,
-    tmpWidth + margin,
-    (tmpWidth + margin) / aspectRatioValue,
+    treeWidth + margin,
+    (treeWidth + margin) / aspectRatioValue,
   ];
 };
 
@@ -73,9 +58,6 @@ export default function R12nTreePage() {
   const [dirty, setDirty] = React.useState(false);
   const [refresh, setRefresh] = React.useState(false);
   const [modelList, setModelList] = React.useState({});
-
-  const [treeHeight, setTreeHeight] = React.useState(1000);
-  const [treeWidth, setTreeWidth] = React.useState(1000);
 
   const d3R12nTreeSVGRef = React.useRef(null);
 
@@ -115,10 +97,6 @@ export default function R12nTreePage() {
     // Compute the new tree layout.
     tree(root);
 
-    let treeSize = getTreeWidthHeight(root);
-    setTreeHeight(treeSize["height"]);
-    setTreeWidth(treeSize["width"]);
-
     const nodes = root.descendants().reverse();
     const links = root.links();
 
@@ -150,28 +128,30 @@ export default function R12nTreePage() {
       .attr("x", 0)
       .attr("text-anchor", "middle")
       .text((d: any) => d.data.name.toString())
+      .attr("font-size", (d: any) => (d.data.name > 999 ? "0.5em" : "1em"))
       .clone(true)
       .lower()
       .attr("stroke-linejoin", "round")
       .attr("stroke-width", 3)
       .attr("stroke", "white");
 
-    let viewBox = getViewBox(treeWidth, treeHeight);
+    let treeSize = getTreeWidthHeight(root);
+    let viewBox = getViewBox(treeSize["width"]);
     const duration = 2500;
     const transition = svg
       .transition()
       .duration(duration)
-      .attr(
-        "viewBox",
-        `${viewBox[0]},${viewBox[1]}, ${viewBox[2]}, ${viewBox[3]}`
-      )
+      //.attr(
+      //  "viewBox",
+      //  `${viewBox[0]},${viewBox[1]}, ${viewBox[2]}, ${viewBox[3]}`
+      //)
       .tween(
         "resize",
         window.ResizeObserver ? null : () => () => svg.dispatch("toggle")
       );
 
     // Transition nodes to their new position.
-    const nodeUpdate = node
+    node
       .merge(nodeEnter)
       .transition(transition)
       .attr("transform", (d: any) => `translate(${d.x},${d.y})`)
@@ -201,18 +181,27 @@ export default function R12nTreePage() {
         });
       });
 
+    let zoom = d3
+      .zoom()
+      //.extent([
+      //  [viewBox[0], viewBox[1]],
+      //  [viewBox[2], viewBox[3]],
+      //])
+      .scaleExtent([0, 100])
+      .on("zoom", zoomed);
+
+    svg.call(zoom);
+
     svg.call(
-      d3
-        .zoom()
-        .extent([
-          [viewBox[0], viewBox[1]],
-          [viewBox[2], viewBox[3]],
-        ])
-        .scaleExtent([1, 8])
-        .on("zoom", zoomed)
+      zoom.transform,
+      d3.zoomIdentity.translate(
+        d3R12nTreeSVGRef.current.clientWidth / 2,
+        margin
+      )
     );
 
     function zoomed({ transform }) {
+      console.log(transform);
       gNode.attr("transform", transform);
       gLink.attr("transform", transform);
     }
@@ -277,7 +266,8 @@ export default function R12nTreePage() {
     });
 
     d3.json(
-      "https://gws.gplates.org/rotation/get_reconstruction_tree_edges/?model=seton2012&level=10&pids=0"
+      //"https://gws.gplates.org/rotation/get_reconstruction_tree_edges/?model=Muller2019&level=3&pids=0"
+      "http://localhost:18000/rotation/get_reconstruction_tree_edges/?model=Muller2019&level=3&pids=0"
     ).then(function (edges: any) {
       console.log(edges);
 
