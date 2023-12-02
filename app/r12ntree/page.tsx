@@ -127,8 +127,8 @@ export default function R12nTreePage() {
       .attr("dy", "0.31em")
       .attr("x", 0)
       .attr("text-anchor", "middle")
-      .text((d: any) => d.data.name.toString())
-      .attr("font-size", (d: any) => (d.data.name > 999 ? "0.5em" : "1em"))
+      .text((d: any) => d.data.pid.toString())
+      .attr("font-size", (d: any) => (d.data.pid > 999 ? "0.5em" : "1em"))
       .clone(true)
       .lower()
       .attr("stroke-linejoin", "round")
@@ -267,10 +267,11 @@ export default function R12nTreePage() {
 
     d3.json(
       //"https://gws.gplates.org/rotation/get_reconstruction_tree_edges/?model=Muller2019&level=3&pids=0"
-      "http://localhost:18000/rotation/get_reconstruction_tree_edges/?model=Muller2019&level=3&pids=0"
-    ).then(function (edges: any) {
-      console.log(edges);
-
+      "http://localhost:18000/rotation/get_reconstruction_tree/?model=Muller2019&level=0&pids=701&maxpid=999"
+    ).then(function (trees: any) {
+      /*
+      //these are the code to build trees from edges
+      //keep the code, do not remove
       let trees = [];
       let roots: any = findRoots(edges);
       for (let r in roots) {
@@ -278,7 +279,10 @@ export default function R12nTreePage() {
         trees.push({ name: roots[r], children: nodes });
       }
       console.log(trees);
-      drawTree(trees[0]);
+      */
+      if (trees.length > 0) {
+        drawTree(trees[0]);
+      }
     });
 
     return () => {
