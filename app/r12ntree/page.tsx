@@ -1,15 +1,15 @@
 "use client";
 
 import * as d3 from "d3";
-import { Button, List } from "flowbite-react";
+import { Button } from "flowbite-react";
 import Link from "next/link";
 import React, { useEffect } from "react";
+import ModelInfo from "../components/ModelInfo";
 import ModelSelect from "../components/ModelSelect";
 import PaleoAgeInput from "../components/PaleoAgeInput";
 import { useDrawR12nTree } from "../hooks/useDrawR12nTree";
 
-const aspectRatio = [16, 9],
-  aspectRatioValue = aspectRatio[0] / aspectRatio[1];
+const aspectRatio = [16, 9];
 
 /**
  *
@@ -108,12 +108,6 @@ export default function R12nTreePage() {
     setDirty(false);
   };
 
-  let currentModelDesc = "";
-  let modelNameLowerCase = modelName.toLowerCase();
-  if (modelNameLowerCase in modelList) {
-    currentModelDesc = modelList[modelNameLowerCase]["description"];
-  }
-
   return (
     <>
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white text-center">
@@ -162,58 +156,7 @@ export default function R12nTreePage() {
           )}
         </div>
       </div>
-      <h3 className="mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-3xl dark:text-white text-center">
-        {modelName}
-      </h3>
-      <div className="ps-5">
-        <h4 className="font-extrabold"> Description:</h4>
-        <p className="ps-10 pe-10">{currentModelDesc}</p>
-      </div>
-      <div className="ps-5">
-        <h4 className="font-extrabold"> Download:</h4>
-        <List className="ps-10">
-          {modelNameLowerCase in modelList && (
-            <List.Item key="Rotations">
-              <a
-                href={modelList[modelNameLowerCase]["Rotations"]}
-                className="underline"
-              >
-                Rotations
-              </a>
-            </List.Item>
-          )}
-          {modelNameLowerCase in modelList &&
-            Object.keys(modelList[modelNameLowerCase]["Layers"]).map(
-              (layer, i) => {
-                return (
-                  <List.Item key={i}>
-                    <a
-                      href={modelList[modelNameLowerCase]["Layers"][layer]}
-                      className="underline"
-                    >
-                      {layer}
-                    </a>
-                  </List.Item>
-                );
-              }
-            )}
-        </List>
-        <p>
-          It is recommended to use{" "}
-          <a href="https://pypi.org/project/plate-model-manager/">
-            <strong>Plate Model Manager</strong>
-          </a>{" "}
-          to download the reconstruction model.
-        </p>
-        <List className="ps-10 italic">
-          <List.Item key="1">
-            <strong>pip install plate-model-manager</strong>
-          </List.Item>
-          <List.Item key="2">
-            <strong>pmm download {modelName}</strong>
-          </List.Item>
-        </List>
-      </div>
+      <ModelInfo modelName={modelName} modelList={modelList} />
       <h2>
         <Link href="/">Back to home</Link>
       </h2>

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 const dx = 50;
 const dy = 50;
 
-const margin = 50;
+const margin = 20;
 
 /**
  *
