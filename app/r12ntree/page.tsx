@@ -6,47 +6,10 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import ModelSelect from "../components/ModelSelect";
 import PaleoAgeInput from "../components/PaleoAgeInput";
+import { useDrawR12nTree } from "../hooks/useDrawR12nTree";
 
-const dx = 50;
-const dy = 50;
-
-const margin = 50;
 const aspectRatio = [16, 9],
   aspectRatioValue = aspectRatio[0] / aspectRatio[1];
-
-/**
- *
- * @param root
- * @returns
- */
-const getTreeWidthHeight = (root) => {
-  let minX = 0,
-    maxX = 0,
-    minY = 0,
-    maxY = 0;
-  root.eachBefore((node) => {
-    if (node.x < minX) minX = node.x;
-    if (node.x > maxX) maxX = node.x;
-    if (node.y < minY) minY = node.y;
-    if (node.y > maxY) maxY = node.y;
-  });
-  return { width: maxX - minX, height: maxY - minY };
-};
-
-/**
- *
- * @param treeWidth
- * @param treeHeight
- * @returns
- */
-const getViewBox = (treeWidth) => {
-  return [
-    -(treeWidth / 2),
-    -margin,
-    treeWidth + margin,
-    (treeWidth + margin) / aspectRatioValue,
-  ];
-};
 
 /**
  *
@@ -60,152 +23,6 @@ export default function R12nTreePage() {
   const [modelList, setModelList] = React.useState({});
 
   const d3R12nTreeSVGRef = React.useRef(null);
-
-  const drawTree = (data) => {
-    const root: any = d3.hierarchy(data);
-
-    const tree = d3.tree().nodeSize([dx, dy]);
-    const diagonal = d3
-      .linkVertical()
-      .x((d) => d[0])
-      .y((d) => d[1]);
-
-    let svg = d3.select(d3R12nTreeSVGRef.current);
-    svg.selectAll("*").remove();
-
-    /*
-    svg
-      .append("g")
-      .append("rect")
-      .attr("x", "0")
-      .attr("y", "0")
-      .attr("width", "200")
-      .attr("height", "200");*/
-
-    const gLink = svg
-      .append("g")
-      .attr("fill", "none")
-      .attr("stroke", "#555")
-      .attr("stroke-opacity", 0.4)
-      .attr("stroke-width", 1.5);
-
-    const gNode = svg
-      .append("g")
-      .attr("cursor", "pointer")
-      .attr("pointer-events", "all");
-
-    // Compute the new tree layout.
-    tree(root);
-
-    const nodes = root.descendants().reverse();
-    const links = root.links();
-
-    const node = gNode.selectAll("g").data(nodes, (d: any) => d.id);
-
-    root.descendants().forEach((d: any, i) => {
-      d.id = i;
-    });
-
-    const nodeEnter = node
-      .enter()
-      .append("g")
-      .attr("transform", (d) => `translate(${root.x},${root.y})`)
-      .attr("fill-opacity", 1)
-      .attr("stroke-opacity", 1)
-      .on("click", (event, d: any) => {});
-
-    /*nodeEnter
-      .append("circle")
-      .attr("r", 10)
-      .attr("fill", (d: any) =>
-        d.children ? "MediumAquaMarine" : "LightSkyBlue"
-      )
-      .attr("stroke-width", 10);*/
-
-    nodeEnter
-      .append("text")
-      .attr("dy", "0.31em")
-      .attr("x", 0)
-      .attr("text-anchor", "middle")
-      .text((d: any) => d.data.pid.toString())
-      .attr("font-size", (d: any) => (d.data.pid > 999 ? "0.5em" : "1em"))
-      .clone(true)
-      .lower()
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-width", 3)
-      .attr("stroke", "white");
-
-    let treeSize = getTreeWidthHeight(root);
-    let viewBox = getViewBox(treeSize["width"]);
-    const duration = 2500;
-    const transition = svg
-      .transition()
-      .duration(duration)
-      //.attr(
-      //  "viewBox",
-      //  `${viewBox[0]},${viewBox[1]}, ${viewBox[2]}, ${viewBox[3]}`
-      //)
-      .tween(
-        "resize",
-        window.ResizeObserver ? null : () => () => svg.dispatch("toggle")
-      );
-
-    // Transition nodes to their new position.
-    node
-      .merge(nodeEnter)
-      .transition(transition)
-      .attr("transform", (d: any) => `translate(${d.x},${d.y})`)
-      .attr("fill-opacity", 1)
-      .attr("stroke-opacity", 1);
-
-    //console.log(links);
-    // Update the links…
-    const link = gLink.selectAll("path").data(links, (d: any) => d.target.id);
-
-    // Enter any new links at the parent's previous position.
-    const linkEnter = link
-      .enter()
-      .append("path")
-      .attr("d", (d) => {
-        return diagonal({ source: [root.x, root.y], target: [root.x, root.y] });
-      });
-
-    // Transition links to their new position.
-    link
-      .merge(linkEnter)
-      .transition(transition)
-      .attr("d", (d: any) => {
-        return diagonal({
-          source: [d.source.x, d.source.y],
-          target: [d.target.x, d.target.y],
-        });
-      });
-
-    let zoom = d3
-      .zoom()
-      //.extent([
-      //  [viewBox[0], viewBox[1]],
-      //  [viewBox[2], viewBox[3]],
-      //])
-      .scaleExtent([0, 100])
-      .on("zoom", zoomed);
-
-    svg.call(zoom);
-
-    svg.call(
-      zoom.transform,
-      d3.zoomIdentity.translate(
-        d3R12nTreeSVGRef.current.clientWidth / 2,
-        margin
-      )
-    );
-
-    function zoomed({ transform }) {
-      console.log(transform);
-      gNode.attr("transform", transform);
-      gLink.attr("transform", transform);
-    }
-  };
 
   /**
    *
@@ -265,30 +82,12 @@ export default function R12nTreePage() {
       setModelList(data);
     });
 
-    d3.json(
-      //"https://gws.gplates.org/rotation/get_reconstruction_tree_edges/?model=Muller2019&level=3&pids=0"
-      "http://localhost:18000/rotation/get_reconstruction_tree/?model=Muller2019&level=0&pids=701&maxpid=999"
-    ).then(function (trees: any) {
-      /*
-      //these are the code to build trees from edges
-      //keep the code, do not remove
-      let trees = [];
-      let roots: any = findRoots(edges);
-      for (let r in roots) {
-        let nodes = getChildren(roots[r], edges);
-        trees.push({ name: roots[r], children: nodes });
-      }
-      console.log(trees);
-      */
-      if (trees.length > 0) {
-        drawTree(trees[0]);
-      }
-    });
-
     return () => {
       window.removeEventListener("resize", onResize);
     };
   }, []);
+
+  useDrawR12nTree(d3R12nTreeSVGRef, paleoAge, modelName, 0);
 
   const modelChangeHandler = (newModelName) => {
     if (newModelName != modelName) {
