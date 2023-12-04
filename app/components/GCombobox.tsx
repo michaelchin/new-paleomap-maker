@@ -1,20 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 const GCombobox = ({ allListItems, currentItem, setCurrentItem }) => {
   const [listItems, setListItems] = React.useState([]);
   const [showListFlag, setShowListFlag] = React.useState(false);
+  const inputRef = React.useRef(null);
 
-  console.log(allListItems);
+  //console.log(allListItems);
+  useEffect(() => {
+    if (allListItems.length > 0) {
+      inputRef.current.value = allListItems[0];
+    }
+  }, []);
 
   /**
    *
    * @param e
    */
   const onInputChange = (e) => {
-    console.log(e);
-    console.log(e.target.value.length);
     if (e.target.value.length == 0) {
       setListItems(allListItems);
     } else {
@@ -31,7 +35,6 @@ const GCombobox = ({ allListItems, currentItem, setCurrentItem }) => {
    * @param e
    */
   const onInputFocus = (e) => {
-    console.log(e);
     setShowListFlag(true);
     setListItems(allListItems);
   };
@@ -41,7 +44,6 @@ const GCombobox = ({ allListItems, currentItem, setCurrentItem }) => {
    * @param e
    */
   const onInputFocusOut = (e) => {
-    console.log(e);
     //setShowListFlag(false);
     if (allListItems.includes(e.target.value)) {
       setCurrentItem(e.target.value);
@@ -52,6 +54,7 @@ const GCombobox = ({ allListItems, currentItem, setCurrentItem }) => {
 
   const handleItemOnClick = (item) => {
     setCurrentItem(item);
+    inputRef.current.value = item;
     console.log(item);
     setShowListFlag(false);
   };
@@ -59,36 +62,37 @@ const GCombobox = ({ allListItems, currentItem, setCurrentItem }) => {
   return (
     <div>
       <div
-        className="dropback"
+        className={`dropback ${showListFlag ? "" : "hidden"}`}
         onClick={(e) => {
           //console.log(e);
           setShowListFlag(false);
         }}
       ></div>
-      <div className="pid-select">
+      <div className="gcombobox pid-select">
         <label
-          htmlFor="model-select"
+          htmlFor="item-input"
           className="block text-sm font-medium leading-6 text-gray-900"
         >
           Root Plate ID
         </label>
         <input
-          id="number-input"
+          ref={inputRef}
+          id="item-input"
           aria-describedby="helper-text-explanation"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Such as 0, 701, etc."
           onChange={(e) => onInputChange(e)}
           onFocus={(e) => onInputFocus(e)}
           onBlur={(e) => onInputFocusOut(e)}
-          value={currentItem}
+          //value={currentItem}
           required
         />
 
         <div
           id="dropdown"
-          className={`{z-10 ${
+          className={`z-10 ${
             showListFlag ? "" : "hidden"
-          } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700}`}
+          } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
         >
           <ul
             className="py-2 text-sm text-gray-700 dark:text-gray-200"

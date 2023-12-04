@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 const dx = 50;
 const dy = 50;
 
@@ -204,14 +204,40 @@ const drawTree = (svgRef, data) => {
   }
 };
 
-export const useDrawR12nTree = (svgRef, paleoAge, modelName, rootPid) => {
+/**
+ *
+ * @param trees
+ * @returns
+ */
+const getAllPIDs = (trees) => {
+  let pids = new Set();
+  for (let i = 0; i < trees.length; i++) {
+    let root: any = d3.hierarchy(trees[i]);
+    root.descendants().forEach((d: any, i) => {
+      pids.add(d.data.pid.toString());
+    });
+  }
+  return Array.from(pids).sort();
+};
+
+const findSubTree = (trees, rootPID) => {
+  return trees[0];
+};
+
+export const useDrawR12nTree = (
+  svgRef,
+  paleoAge,
+  modelName,
+  rootPid,
+  setAllPIDs
+) => {
+  const [trees, setTrees] = React.useState([]);
+
   useEffect(() => {
     d3.json(
       //"https://gws.gplates.org/rotation/get_reconstruction_tree_edges/?model=Muller2019&level=3&pids=0"
       "http://localhost:18000/rotation/get_reconstruction_tree/?model=" +
         modelName +
-        "&level=0&pids=" +
-        rootPid +
         "&maxpid=999&time=" +
         paleoAge
     ).then(function (trees: any) {
@@ -226,9 +252,20 @@ export const useDrawR12nTree = (svgRef, paleoAge, modelName, rootPid) => {
             }
             console.log(trees);
             */
+      setTrees(trees);
+      setAllPIDs(getAllPIDs(trees));
       if (trees.length > 0) {
         drawTree(svgRef, trees[0]);
       }
     });
   }, [paleoAge, modelName]);
+
+  useEffect(() => {
+    if (trees.length > 0) {
+      let subtree = findSubTree(trees, rootPid);
+      if (subtree) {
+        drawTree(svgRef, findSubTree(trees, rootPid));
+      }
+    }
+  }, [rootPid]);
 };

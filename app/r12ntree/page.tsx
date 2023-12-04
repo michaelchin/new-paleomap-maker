@@ -23,6 +23,7 @@ export default function R12nTreePage() {
   const [refresh, setRefresh] = React.useState(false);
   const [modelList, setModelList] = React.useState({});
   const [rootPID, setRootPID] = React.useState("0");
+  const [allPIDs, setAllPIDs] = React.useState([]);
 
   const d3R12nTreeSVGRef = React.useRef(null);
 
@@ -89,7 +90,7 @@ export default function R12nTreePage() {
     };
   }, []);
 
-  useDrawR12nTree(d3R12nTreeSVGRef, paleoAge, modelName, 0);
+  useDrawR12nTree(d3R12nTreeSVGRef, paleoAge, modelName, rootPID, setAllPIDs);
 
   const modelChangeHandler = (newModelName) => {
     if (newModelName != modelName) {
@@ -140,19 +141,21 @@ export default function R12nTreePage() {
             paleoAgeChangeHandler={paleoAgeChangeHandler}
           />
           <GCombobox
-            allListItems={["0", "701", "801", "901"]}
+            allListItems={allPIDs}
             currentItem={rootPID}
             setCurrentItem={setRootPID}
           />
-          <Button
-            disabled={!dirty}
-            className="refresh-btn "
-            size="sm"
-            onClick={() => handleRefreshButtonClicked()}
-          >
-            Refresh Tree
-          </Button>
-          {dirty && (
+          {false && (
+            <Button
+              disabled={!dirty}
+              className="refresh-btn "
+              size="sm"
+              onClick={() => handleRefreshButtonClicked()}
+            >
+              Refresh Tree
+            </Button>
+          )}
+          {dirty && false && (
             <div
               className="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
               role="alert"

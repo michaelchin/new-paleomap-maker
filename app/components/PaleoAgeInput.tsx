@@ -1,4 +1,13 @@
+import React, { useEffect } from "react";
+
 const PaleoAgeInput = ({ paleoAge, paleoAgeChangeHandler }) => {
+  const inputRef = React.useRef(null);
+
+  //console.log(allListItems);
+  useEffect(() => {
+    inputRef.current.value = paleoAge;
+  }, [paleoAge]);
+
   return (
     <div className="paleo-age-input">
       <label
@@ -33,6 +42,7 @@ const PaleoAgeInput = ({ paleoAge, paleoAgeChangeHandler }) => {
         </button>
         <div className="relative">
           <input
+            ref={inputRef}
             type="text"
             id="paleo-age-input"
             data-input-counter
@@ -41,8 +51,8 @@ const PaleoAgeInput = ({ paleoAge, paleoAgeChangeHandler }) => {
             aria-describedby="helper-text-explanation"
             className="bg-gray-50 border-x-0 border-gray-300 h-11 font-medium text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="140"
-            value={paleoAge}
-            onChange={(e) => paleoAgeChangeHandler(parseInt(e.target.value))}
+            //value={paleoAge}
+            onBlur={(e) => paleoAgeChangeHandler(parseInt(e.target.value))}
             required
           />
           <span className="absolute inset-y-0 end-0 top-0 flex items-center pe-1.5 pointer-events-none">
