@@ -26,7 +26,6 @@ export default function D3MapPage() {
     d3.json("https://repo.gplates.org/webdav/pmm/models.json").then(function (
       data: any
     ) {
-      console.log(data);
       setModelList(data);
     });
     return () => {

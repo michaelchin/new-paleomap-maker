@@ -5,7 +5,7 @@ const PaleoAgeInput = ({ paleoAge, paleoAgeChangeHandler }) => {
         htmlFor="paleo-age-input"
         className="block text-sm font-medium text-gray-900 dark:text-white"
       >
-        PaleoAge:
+        PaleoAge
       </label>
       <div className="relative flex items-center max-w-[13rem]">
         <button

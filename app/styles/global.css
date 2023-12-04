@@ -42,6 +42,7 @@ img {
 
 .model-select,
 .proj-select,
+.pid-select,
 .paleo-age-input {
   width: 200px;
   margin: 10px auto;
@@ -52,4 +53,15 @@ img {
   stroke: blue;
   stroke-width: 0px;
   fill: gray;
+}
+
+.dropback {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.pid-select {
+  position: relative;
+  z-index: 10;
 }

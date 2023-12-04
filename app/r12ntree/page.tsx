@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import { Button } from "flowbite-react";
 import Link from "next/link";
 import React, { useEffect } from "react";
+import GCombobox from "../components/GCombobox";
 import ModelInfo from "../components/ModelInfo";
 import ModelSelect from "../components/ModelSelect";
 import PaleoAgeInput from "../components/PaleoAgeInput";
@@ -21,6 +22,7 @@ export default function R12nTreePage() {
   const [dirty, setDirty] = React.useState(false);
   const [refresh, setRefresh] = React.useState(false);
   const [modelList, setModelList] = React.useState({});
+  const [rootPID, setRootPID] = React.useState("0");
 
   const d3R12nTreeSVGRef = React.useRef(null);
 
@@ -136,6 +138,11 @@ export default function R12nTreePage() {
           <PaleoAgeInput
             paleoAge={paleoAge}
             paleoAgeChangeHandler={paleoAgeChangeHandler}
+          />
+          <GCombobox
+            allListItems={["0", "701", "801", "901"]}
+            currentItem={rootPID}
+            setCurrentItem={setRootPID}
           />
           <Button
             disabled={!dirty}
