@@ -24,8 +24,10 @@ export default function R12nTreePage() {
   const [modelList, setModelList] = React.useState({});
   const [rootPID, setRootPID] = React.useState("0");
   const [allPIDs, setAllPIDs] = React.useState([]);
+  const [maxPID, setMaxPID] = React.useState(999);
 
   const d3R12nTreeSVGRef = React.useRef(null);
+  const maxPidInputRef = React.useRef(null);
 
   /**
    *
@@ -85,12 +87,21 @@ export default function R12nTreePage() {
       setModelList(data);
     });
 
+    maxPidInputRef.current.value = 999;
+
     return () => {
       window.removeEventListener("resize", onResize);
     };
   }, []);
 
-  useDrawR12nTree(d3R12nTreeSVGRef, paleoAge, modelName, rootPID, setAllPIDs);
+  useDrawR12nTree(
+    d3R12nTreeSVGRef,
+    paleoAge,
+    modelName,
+    rootPID,
+    setAllPIDs,
+    maxPID
+  );
 
   const modelChangeHandler = (newModelName) => {
     if (newModelName != modelName) {
@@ -109,6 +120,17 @@ export default function R12nTreePage() {
   const handleRefreshButtonClicked = () => {
     setRefresh(!refresh);
     setDirty(false);
+  };
+
+  const onMaxPidInputFocusOut = () => {
+    let value = parseInt(maxPidInputRef.current.value);
+    if (Number.isNaN(value)) {
+      alert("Invalid Max Plate ID: " + maxPidInputRef.current.value);
+    } else if (value < parseInt(rootPID)) {
+      alert("Max Plate ID cannot be less than the current Root Plate ID.");
+    } else {
+      setMaxPID(maxPidInputRef.current.value);
+    }
   };
 
   return (
@@ -145,6 +167,22 @@ export default function R12nTreePage() {
             currentItem={rootPID}
             setCurrentItem={setRootPID}
           />
+          <div className="max-pid-input">
+            <label
+              htmlFor="max-pid-input"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Max Plate ID
+            </label>
+            <input
+              ref={maxPidInputRef}
+              id="max-pid-input"
+              aria-describedby="helper-text-explanation"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              onBlur={(e) => onMaxPidInputFocusOut()}
+              required
+            />
+          </div>
           {false && (
             <Button
               disabled={!dirty}

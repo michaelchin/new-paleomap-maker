@@ -7,12 +7,14 @@ const GCombobox = ({ allListItems, currentItem, setCurrentItem }) => {
   const [showListFlag, setShowListFlag] = React.useState(false);
   const inputRef = React.useRef(null);
 
-  //console.log(allListItems);
+  /**
+   * set initial value for the input element
+   */
   useEffect(() => {
-    if (allListItems.length > 0) {
+    if (allListItems.length > 0 && inputRef.current.value == "") {
       inputRef.current.value = allListItems[0];
     }
-  }, []);
+  }, [allListItems]);
 
   /**
    *
@@ -55,7 +57,7 @@ const GCombobox = ({ allListItems, currentItem, setCurrentItem }) => {
   const handleItemOnClick = (item) => {
     setCurrentItem(item);
     inputRef.current.value = item;
-    console.log(item);
+    //console.log(item);
     setShowListFlag(false);
   };
 
@@ -80,7 +82,6 @@ const GCombobox = ({ allListItems, currentItem, setCurrentItem }) => {
           id="item-input"
           aria-describedby="helper-text-explanation"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Such as 0, 701, etc."
           onChange={(e) => onInputChange(e)}
           onFocus={(e) => onInputFocus(e)}
           onBlur={(e) => onInputFocusOut(e)}

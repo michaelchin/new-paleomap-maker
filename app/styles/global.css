@@ -43,6 +43,7 @@ img {
 .model-select,
 .proj-select,
 .pid-select,
+.max-pid-input,
 .paleo-age-input {
   width: 200px;
   margin: 10px auto;

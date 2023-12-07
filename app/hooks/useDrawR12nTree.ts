@@ -206,22 +206,92 @@ const drawTree = (svgRef, data) => {
 
 /**
  *
+ * @param children
+ * @param maxPID
+ * @returns
+ */
+const hasValidChild = (children, maxPID: number) => {
+  for (let i = 0; i < children.length; i++) {
+    if (children[i].pid < maxPID) {
+      return true;
+    }
+  }
+  return false;
+};
+/**
+ *
  * @param trees
  * @returns
  */
-const getAllPIDs = (trees) => {
+const getNonLeavePIDs = (trees, maxPID: number) => {
   let pids = new Set();
   for (let i = 0; i < trees.length; i++) {
-    let root: any = d3.hierarchy(trees[i]);
-    root.descendants().forEach((d: any, i) => {
-      pids.add(d.data.pid.toString());
+    depth_first_search(trees[i], (node) => {
+      if (node.pid < maxPID && hasValidChild(node.children, maxPID)) {
+        pids.add(node.pid.toString());
+      }
+      return true;
     });
   }
   return Array.from(pids).sort();
 };
 
-const findSubTree = (trees, rootPID) => {
-  return trees[0];
+/**
+ *
+ * @param trees
+ * @param rootPID
+ * @returns
+ */
+const findSubTree = (trees, rootPID: string) => {
+  let ret = {};
+  for (let i = 0; i < trees.length; i++) {
+    depth_first_search(trees[i], (node) => {
+      if (node.pid.toString() == rootPID) {
+        ret = node;
+        return false;
+      }
+      return true;
+    });
+  }
+  return ret;
+};
+
+/**
+ *
+ * @param tree
+ * @param maxPID
+ */
+const filterTree = (tree, maxPID: number) => {
+  let newTree = {};
+  if (tree["pid"] > maxPID) {
+    return null;
+  }
+
+  newTree["pid"] = tree["pid"];
+  newTree["children"] = [];
+  //console.log(tree);
+  for (let i = 0; i < tree["children"].length; i++) {
+    let child = filterTree(tree["children"][i], maxPID);
+    if (child) {
+      newTree["children"].push(child);
+    }
+  }
+  return newTree;
+};
+
+/**
+ *
+ * @param tree
+ * @param callback
+ */
+const depth_first_search = (tree, callback) => {
+  let ret = callback(tree);
+  if (!ret) {
+    return;
+  }
+  for (let i = 0; i < tree["children"].length; i++) {
+    depth_first_search(tree["children"][i], callback);
+  }
 };
 
 export const useDrawR12nTree = (
@@ -229,43 +299,58 @@ export const useDrawR12nTree = (
   paleoAge,
   modelName,
   rootPid,
-  setAllPIDs
+  setAllPIDs,
+  maxPID
 ) => {
   const [trees, setTrees] = React.useState([]);
 
+  /**
+   *
+   */
   useEffect(() => {
     d3.json(
       //"https://gws.gplates.org/rotation/get_reconstruction_tree_edges/?model=Muller2019&level=3&pids=0"
       "http://localhost:18000/rotation/get_reconstruction_tree/?model=" +
         modelName +
-        "&maxpid=999&time=" +
+        "&time=" +
         paleoAge
-    ).then(function (trees: any) {
+    ).then(function (data: any) {
       /*
-            //these are the code to build trees from edges
-            //keep the code, do not remove
-            let trees = [];
-            let roots: any = findRoots(edges);
-            for (let r in roots) {
-              let nodes = getChildren(roots[r], edges);
-              trees.push({ name: roots[r], children: nodes });
-            }
-            console.log(trees);
-            */
-      setTrees(trees);
-      setAllPIDs(getAllPIDs(trees));
-      if (trees.length > 0) {
-        drawTree(svgRef, trees[0]);
-      }
+        //these are the code to build trees from edges
+        //keep the code, do not remove
+        let trees = [];
+        let roots: any = findRoots(edges);
+        for (let r in roots) {
+          let nodes = getChildren(roots[r], edges);
+          trees.push({ name: roots[r], children: nodes });
+        }
+        console.log(trees);
+      */
+      setTrees(data);
     });
   }, [paleoAge, modelName]);
 
+  /**
+   *
+   */
   useEffect(() => {
     if (trees.length > 0) {
       let subtree = findSubTree(trees, rootPid);
-      if (subtree) {
-        drawTree(svgRef, findSubTree(trees, rootPid));
+      let newTree = filterTree(subtree, maxPID);
+      if (newTree) {
+        drawTree(svgRef, newTree);
+      } else {
+        alert("The tree is empty!");
       }
     }
-  }, [rootPid]);
+  }, [trees, rootPid, maxPID]);
+
+  /**
+   *
+   */
+  useEffect(() => {
+    if (trees.length > 0) {
+      setAllPIDs(getNonLeavePIDs(trees, maxPID));
+    }
+  }, [trees, maxPID]);
 };
