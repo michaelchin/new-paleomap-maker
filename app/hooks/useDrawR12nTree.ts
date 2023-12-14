@@ -294,6 +294,39 @@ const depth_first_search = (tree, callback) => {
   }
 };
 
+/**
+ *
+ * @param a
+ * @param b
+ * @returns
+ */
+function comparePID(a, b) {
+  return a["pid"] - b["pid"];
+}
+
+/**
+ *
+ * @param tree
+ */
+const sortChildren = (tree) => {
+  function comparePID(a, b) {
+    return a["pid"] - b["pid"];
+  }
+  tree["children"].sort(comparePID);
+  for (let i = 0; i < tree["children"].length; i++) {
+    sortChildren(tree["children"][i]);
+  }
+};
+
+/**
+ *
+ * @param svgRef
+ * @param paleoAge
+ * @param modelName
+ * @param rootPid
+ * @param setAllPIDs
+ * @param maxPID
+ */
 export const useDrawR12nTree = (
   svgRef,
   paleoAge,
@@ -309,8 +342,8 @@ export const useDrawR12nTree = (
    */
   useEffect(() => {
     d3.json(
-      //"https://gws.gplates.org/rotation/get_reconstruction_tree_edges/?model=Muller2019&level=3&pids=0"
-      "http://localhost:18000/rotation/get_reconstruction_tree/?model=" +
+      "https://gws.gplates.org/rotation/get_reconstruction_tree/?model=" +
+        //"http://localhost:18000/rotation/get_reconstruction_tree/?model=" +
         modelName +
         "&time=" +
         paleoAge
@@ -326,6 +359,10 @@ export const useDrawR12nTree = (
         }
         console.log(trees);
       */
+      for (let i = 0; i < data.length; i++) {
+        sortChildren(data[i]);
+      }
+      data.sort(comparePID);
       setTrees(data);
     });
   }, [paleoAge, modelName]);
