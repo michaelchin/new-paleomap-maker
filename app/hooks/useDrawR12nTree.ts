@@ -50,6 +50,20 @@ const getDefaultViewBox = (svnWidth, svgHeight) => {
   return [-(svnWidth / 2), -margin, svnWidth, svgHeight];
 };
 
+/**
+ *
+ * @param svgRef
+ */
+const clearTree = (svgRef) => {
+  let svg = d3.select(svgRef.current);
+  svg.selectAll("*").remove();
+};
+
+/**
+ *
+ * @param svgRef
+ * @param data
+ */
 const drawTree = (svgRef, data) => {
   const root: any = d3.hierarchy(data);
 
@@ -373,11 +387,15 @@ export const useDrawR12nTree = (
   useEffect(() => {
     if (trees.length > 0) {
       let subtree = findSubTree(trees, rootPid);
-      let newTree = filterTree(subtree, maxPID);
+      let newTree = null;
+      if ("children" in subtree) {
+        newTree = filterTree(subtree, maxPID);
+      }
       if (newTree) {
         drawTree(svgRef, newTree);
       } else {
         alert("The tree is empty!");
+        clearTree(svgRef);
       }
     }
   }, [trees, rootPid, maxPID]);
