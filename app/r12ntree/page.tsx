@@ -4,11 +4,14 @@ import * as d3 from "d3";
 import { Button } from "flowbite-react";
 import Link from "next/link";
 import React, { useEffect } from "react";
+import ReactGA from "react-ga4";
 import GCombobox from "../components/GCombobox";
 import ModelInfo from "../components/ModelInfo";
 import ModelSelect from "../components/ModelSelect";
 import PaleoAgeInput from "../components/PaleoAgeInput";
 import { useDrawR12nTree } from "../hooks/useDrawR12nTree";
+
+ReactGA.initialize("G-Q6Q8NL5L99");
 
 const aspectRatio = [16, 9];
 
@@ -132,6 +135,12 @@ export default function R12nTreePage() {
       setMaxPID(maxPidInputRef.current.value);
     }
   };
+
+  ReactGA.send({
+    hitType: "pageview",
+    page: "/my-path",
+    title: "Custom Title",
+  });
 
   return (
     <>

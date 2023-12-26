@@ -1,8 +1,8 @@
-import "./styles/global.css";
+import "../styles/global.css";
 
 export const metadata = {
-  title: "Paleomap Maker",
-  description: "the new paleomap maker",
+  title: "Reconstruction Tree",
+  description: "visualise the reconstruction trees",
 };
 
 export default function RootLayout({
