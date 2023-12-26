@@ -11,8 +11,6 @@ import ModelSelect from "../components/ModelSelect";
 import PaleoAgeInput from "../components/PaleoAgeInput";
 import { useDrawR12nTree } from "../hooks/useDrawR12nTree";
 
-ReactGA.initialize("G-Q6Q8NL5L99");
-
 const aspectRatio = [16, 9];
 
 /**
@@ -138,8 +136,8 @@ export default function R12nTreePage() {
 
   ReactGA.send({
     hitType: "pageview",
-    page: "/my-path",
-    title: "Custom Title",
+    page: "/r12ntree",
+    title: "Reconstruction Tree",
   });
 
   return (
