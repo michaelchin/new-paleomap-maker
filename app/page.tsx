@@ -4,7 +4,6 @@ import * as d3 from "d3";
 import { Button } from "flowbite-react";
 import Link from "next/link";
 import React, { useEffect } from "react";
-import ReactGA from "react-ga4";
 import D3SVG from "./components/D3SVG";
 import ModelInfo from "./components/ModelInfo";
 import ModelSelect from "./components/ModelSelect";
@@ -84,11 +83,11 @@ export default function D3MapPage() {
     currentModelDesc = modelList[modelNameLowerCase]["description"];
   }
 
-  ReactGA.send({
+  /*ReactGA.send({
     hitType: "pageview",
     page: "/",
     title: "Paleomap Maker",
-  });
+  });*/
 
   return (
     <>
