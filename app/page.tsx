@@ -11,6 +11,8 @@ import ModelSelect from "./components/ModelSelect";
 import PaleoAgeInput from "./components/PaleoAgeInput";
 import ProjSelect from "./components/ProjSelect";
 
+ReactGA.initialize("G-SK40RD0DHH");
+
 export default function D3MapPage() {
   const [projName, setProjName] = React.useState("Orthographic");
   const [modelName, setModelName] = React.useState("Muller2019");
@@ -84,11 +86,11 @@ export default function D3MapPage() {
     currentModelDesc = modelList[modelNameLowerCase]["description"];
   }
 
-  ReactGA.send({
+  /*ReactGA.send({
     hitType: "pageview",
     page: "/",
     title: "Paleomap Maker",
-  });
+  });*/
 
   return (
     <>
