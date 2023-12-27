@@ -1,7 +1,7 @@
 import "./styles/global.css";
 
 import ReactGA from "react-ga4";
-ReactGA.initialize("G-VVJ6Y1B96E");
+ReactGA.initialize("G-SK40RD0DHH");
 
 export const metadata = {
   title: "Paleomap Maker",
