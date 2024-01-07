@@ -5,6 +5,8 @@ const dy = 50;
 
 const margin = 20;
 
+let plate_names_dict = {};
+
 /**
  *
  * @param root
@@ -48,6 +50,17 @@ const getMaxViewBox = (treeWidth) => {
  */
 const getDefaultViewBox = (svnWidth, svgHeight) => {
   return [-(svnWidth / 2), -margin, svnWidth, svgHeight];
+};
+
+/**
+ *
+ * @param event
+ * @param d
+ */
+const onNodeClick = (event, d) => {
+  //console.log("tree node has been clicked.");
+  //console.log(event);
+  //console.log(d);
 };
 
 /**
@@ -115,15 +128,19 @@ const drawTree = (svgRef, data) => {
     .attr("transform", (d) => `translate(${root.x},${root.y})`)
     .attr("fill-opacity", 1)
     .attr("stroke-opacity", 1)
-    .on("click", (event, d: any) => {});
+    .on("click", (event, d: any) => {
+      onNodeClick(event, d);
+    });
 
-  /*nodeEnter
-      .append("circle")
-      .attr("r", 10)
-      .attr("fill", (d: any) =>
-        d.children ? "MediumAquaMarine" : "LightSkyBlue"
-      )
-      .attr("stroke-width", 10);*/
+  /*
+  nodeEnter
+    .append("circle")
+    .attr("r", 10)
+    .attr("fill", (d: any) =>
+      d.children ? "MediumAquaMarine" : "LightSkyBlue"
+    )
+    .attr("stroke-width", 10);
+    */
 
   nodeEnter
     .append("text")
@@ -137,6 +154,73 @@ const drawTree = (svgRef, data) => {
     .attr("stroke-linejoin", "round")
     .attr("stroke-width", 3)
     .attr("stroke", "white");
+
+  // display PID name and description while mouse is over the node
+  nodeEnter.on("mouseover", function (event, d: any) {
+    d3.select(this).style("fill", "red");
+
+    //console.log(d3.select(this));
+    let name = "Unknown";
+    let desc = "N/A";
+    if (d.data.pid.toString() in plate_names_dict) {
+      let name_ = plate_names_dict[d.data.pid.toString()][0];
+      let desc_ = plate_names_dict[d.data.pid.toString()][1];
+      if (name_.length > 0) {
+        name = name_;
+      }
+      if (desc_.length > 0) {
+        desc = desc_;
+      }
+    }
+
+    const rect = d3
+      .select(this)
+      .append("rect")
+      .attr("class", "pid-info")
+      .attr("x", 20)
+      .attr("y", -15)
+      .attr("height", 35)
+      .style("fill", "pink");
+
+    d3.select(this)
+      .append("text")
+      .classed("pid-info", true)
+      .attr("x", 25)
+      .attr("y", 0)
+      .style("fill", "black")
+      .html("Name: " + name)
+      .call(getTextBox);
+
+    d3.select(this)
+      .append("text")
+      .classed("pid-info", true)
+      .attr("x", 25)
+      .attr("y", 15)
+      .style("fill", "black")
+      .html("Description: " + desc)
+      .call(getTextBox);
+
+    rect.attr("width", function (d: any) {
+      return d.bbox.width + 10;
+    });
+  });
+
+  /**
+   *
+   * @param selection
+   */
+  function getTextBox(selection) {
+    selection.each(function (d) {
+      if (!d.bbox || d.bbox.width < this.getBBox().width) {
+        d.bbox = this.getBBox();
+      }
+    });
+  }
+
+  nodeEnter.on("mouseout", function (event, d: any) {
+    d3.select(this).style("fill", null);
+    d3.selectAll(".pid-info").remove();
+  });
 
   /*
     let treeSize = getTreeWidthHeight(root);
@@ -319,6 +403,7 @@ function comparePID(a, b) {
 }
 
 /**
+ * make sure the children will be rendered in consistent order.
  *
  * @param tree
  */
@@ -350,6 +435,19 @@ export const useDrawR12nTree = (
   maxPID
 ) => {
   const [trees, setTrees] = React.useState([]);
+
+  /**
+   *
+   */
+  useEffect(() => {
+    d3.json(
+      //"https://gws.gplates.org/earth/get_plate_names" +
+      "http://localhost:18000/earth/get_plate_names"
+    ).then(function (data: any) {
+      //console.log(data);
+      plate_names_dict = data;
+    });
+  }, []);
 
   /**
    *
