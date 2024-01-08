@@ -441,8 +441,8 @@ export const useDrawR12nTree = (
    */
   useEffect(() => {
     d3.json(
-      //"https://gws.gplates.org/earth/get_plate_names" +
-      "http://localhost:18000/earth/get_plate_names"
+      "https://gws.gplates.org/earth/get_plate_names"
+      //"http://localhost:18000/earth/get_plate_names"
     ).then(function (data: any) {
       //console.log(data);
       plate_names_dict = data;
