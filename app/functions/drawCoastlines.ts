@@ -1,24 +1,31 @@
 import * as d3 from "d3";
-import { useEffect } from "react";
+/**
+ *
+ * @param svgRef
+ * @param paleoAge
+ * @param projection
+ * @param modelName
+ */
+export const drawCoastlines = async (
+  svgRef,
+  paleoAge,
+  projection,
+  modelName
+) => {
+  let svg = d3.select(svgRef.current);
+  var path = d3.geoPath().projection(projection.proj);
+  svg.selectAll(".coastlines").remove();
 
-export const useDrawCoastlines = (svgRef, paleoAge, projection, modelName) => {
-  useEffect(() => {
-    if (projection.name == null) {
-      return () => {};
-    }
-
-    let svg = d3.select(svgRef.current);
-    var path = d3.geoPath().projection(projection.proj);
-    svg.selectAll(".coastlines").remove();
-
-    d3.json(
-      "https://gws.gplates.org/reconstruct/coastlines_low/?time=" +
-        //"http://localhost:18000/reconstruct/coastlines_low/?time=" +
+  return d3
+    .json(
+      //"https://gws.gplates.org/reconstruct/coastlines_low/?time=" +
+      "http://localhost:18000/reconstruct/coastlines_low/?time=" +
         paleoAge +
         "&model=" +
         modelName +
         "&avoid_map_boundary&min_area=2000"
-    ).then(function (data: any) {
+    )
+    .then(function (data: any) {
       //console.log(data);
       let coastlinsLayer = svg.append("g").attr("class", "coastlines");
       coastlinsLayer
@@ -34,9 +41,7 @@ export const useDrawCoastlines = (svgRef, paleoAge, projection, modelName) => {
         })
         .on("mouseout", function (d, i) {
           d3.select(this).style("fill-opacity", 1);
-
           d3.select(this).style("stroke-width", "0px");
         });
     });
-  }, [projection]);
 };

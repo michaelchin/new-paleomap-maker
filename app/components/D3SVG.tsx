@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 
 import * as d3 from "d3";
-import { useDrag } from "../hooks/useDrag";
-import { useDrawCoastlines } from "../hooks/useDrawCoastlines";
-import { useDrawGraticule } from "../hooks/useDrawGraticule";
-import { useGetProjection } from "../hooks/useGetProjection";
-import { useZoom } from "../hooks/useZoom";
+import { drawCoastlines } from "../functions/drawCoastlines";
+import { drawGraticule } from "../functions/drawGraticule";
+import { drawPoint } from "../functions/drawPoint";
+import { getProjection } from "../functions/getProjection";
+import { setupDrag } from "../functions/setupDrag";
+import { setupZoom } from "../functions/setupZoom";
 
 interface D3SVGPros {
   paleoAge: number;
@@ -37,7 +38,7 @@ const D3SVG: React.FC<D3SVGPros> = ({
   useEffect(() => {
     setProjection({
       name: projName,
-      proj: useGetProjection(
+      proj: getProjection(
         projName,
         d3SVGRef.current.clientHeight,
         d3SVGRef.current.clientWidth
@@ -55,13 +56,19 @@ const D3SVG: React.FC<D3SVGPros> = ({
       );
   }, []);
 
-  useDrag(d3SVGRef, projection);
+  useEffect(() => {
+    if (projection.name == null || projection.proj == null) {
+      return () => {};
+    }
+    setupDrag(d3SVGRef, projection);
 
-  useZoom(d3SVGRef, projection);
+    setupZoom(d3SVGRef, projection);
 
-  useDrawGraticule(d3SVGRef, projection);
-
-  useDrawCoastlines(d3SVGRef, paleoAge, projection, modelName);
+    drawCoastlines(d3SVGRef, paleoAge, projection, modelName).then(() => {
+      drawPoint(d3SVGRef, 0, 0, projection, 1);
+      drawGraticule(d3SVGRef, projection);
+    });
+  }, [projection]);
 
   return (
     <svg

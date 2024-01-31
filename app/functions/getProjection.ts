@@ -1,11 +1,11 @@
 import * as d3 from "d3";
 
-export const useGetProjection = (
+export const getProjection = (
   projectionName: string,
   svgHeight: number,
   svgWidth: number
 ) => {
-  if (projectionName == "Orthographic") {
+  if (projectionName.toLowerCase() == "orthographic") {
     let oScale0 = (svgWidth - 40) / 4;
     return d3
       .geoOrthographic()
