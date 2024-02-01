@@ -2,33 +2,39 @@ import * as d3 from "d3";
 
 /**
  *
- * @param svgRef
+ * @param layer
  * @param lon
  * @param lat
  * @param projection
  */
-export const drawPoint = (svgRef, lon, lat, projection, radius) => {
-  let svg = d3.select(svgRef.current);
-  let layer = svg.append("g").attr("class", "points");
+export const drawPoint = (
+  layer,
+  lon: number,
+  lat: number,
+  projection,
+  radius: number
+) => {
   let proj = projection.proj;
   let projName = projection.name;
 
-  if (!proj) {
+  if (proj == null || projName == null) {
     return;
   }
-  console.log(projection);
+  //console.log(projection);
   if (projName.toLowerCase() == "orthographic") {
-    let circle = d3.geoCircle();
-    let path = d3.geoPath().projection(proj);
-
     layer
       .append("path")
-      //.datum({type: "Point", coordinates: [d[1], d[0]]})
-      .datum(circle.center([lon, lat]).radius(radius).precision(10))
-      .attr("d", path)
+      .datum([lon, lat, radius])
+      .attr("d", function (d) {
+        console.log(d);
+        return d3.geoPath().projection(proj)(
+          d3.geoCircle().center([d[0], d[1]]).radius(d[2]).precision(10)()
+        );
+      })
       .attr("class", "pathPoint")
       .append("svg:title")
       .text(function (d) {
+        console.log(d);
         return "Longitude: " + d[0] + "\nLatitude: " + d[1];
       });
   } else {
@@ -50,4 +56,18 @@ export const drawPoint = (svgRef, lon, lat, projection, radius) => {
         return "Longitude: " + d[0] + "\nLatitude: " + d[1];
       });
   }
+  layer
+    .append("text")
+    .datum([lon, lat])
+    .attr("x", function (d) {
+      return proj(d)[0];
+    })
+    .attr("y", function (d) {
+      return proj(d)[1];
+    })
+    .text(function (d) {
+      return "test-txt";
+    })
+    .attr("class", "pointLabel")
+    .style("font-size", "14px");
 };

@@ -37,7 +37,10 @@ export const setupZoom = (svgRef, projection) => {
       svg.selectAll(".graticule").attr("d", path);
       //svg.selectAll(".pathPoint").attr("d", path);
       svg.selectAll(".pathPoint").remove();
-      drawPoint(svgRef, 0, 0, projection, 1 / event.transform.k);
+      svg.selectAll(".pointLabel").remove();
+
+      let layer = d3.select(svgRef.current).append("g").attr("class", "points");
+      drawPoint(layer, 0, 0, projection, 1 / event.transform.k);
 
       console.log(event.transform);
     }

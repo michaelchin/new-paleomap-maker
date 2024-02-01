@@ -65,7 +65,11 @@ const D3SVG: React.FC<D3SVGPros> = ({
     setupZoom(d3SVGRef, projection);
 
     drawCoastlines(d3SVGRef, paleoAge, projection, modelName).then(() => {
-      drawPoint(d3SVGRef, 0, 0, projection, 1);
+      let layer = d3
+        .select(d3SVGRef.current)
+        .append("g")
+        .attr("class", "points");
+      drawPoint(layer, 0, 0, projection, 1);
       drawGraticule(d3SVGRef, projection);
     });
   }, [projection]);
