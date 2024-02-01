@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 
 import * as d3 from "d3";
+import { drawCities } from "../functions/drawCities";
 import { drawCoastlines } from "../functions/drawCoastlines";
 import { drawGraticule } from "../functions/drawGraticule";
-import { drawPoint } from "../functions/drawPoint";
 import { getProjection } from "../functions/getProjection";
 import { setupDrag } from "../functions/setupDrag";
 import { setupZoom } from "../functions/setupZoom";
@@ -65,12 +65,8 @@ const D3SVG: React.FC<D3SVGPros> = ({
     setupZoom(d3SVGRef, projection);
 
     drawCoastlines(d3SVGRef, paleoAge, projection, modelName).then(() => {
-      let layer = d3
-        .select(d3SVGRef.current)
-        .append("g")
-        .attr("class", "points");
-      drawPoint(layer, 0, 0, projection, 1);
       drawGraticule(d3SVGRef, projection);
+      drawCities(d3SVGRef, paleoAge, projection, modelName);
     });
   }, [projection]);
 

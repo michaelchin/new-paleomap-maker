@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import { drawPoint } from "./drawPoint";
 
 export const setupZoom = (svgRef, projection) => {
   if (projection.name == null || projection.proj == null) {
@@ -18,31 +17,41 @@ export const setupZoom = (svgRef, projection) => {
 
   var zoom = d3.zoom().on("zoom", function (event, d) {
     //console.log(event);
-    if (event.transform.k > 0.3) {
-      /*
-      let translate = projection.proj.translate();
-      var tx = translate[0];
-      var ty = translate[1];
-      projection.proj.translate([
-        tx + event.transform.x,
-        ty + event.transform.y,
-      ]);
-      let path = d3.geoPath().projection(projection.proj);
-     
-      projection.proj.translate([tx, ty]);
-    */
+    if (event.transform.k > 0.5) {
       projection.proj.scale(scale0 * event.transform.k);
       let path = d3.geoPath().projection(projection.proj);
       svg.selectAll(".coastline").attr("d", path);
       svg.selectAll(".graticule").attr("d", path);
-      //svg.selectAll(".pathPoint").attr("d", path);
-      svg.selectAll(".pathPoint").remove();
-      svg.selectAll(".pointLabel").remove();
 
-      let layer = d3.select(svgRef.current).append("g").attr("class", "points");
-      drawPoint(layer, 0, 0, projection, 1 / event.transform.k);
+      if (projection.name.toLowerCase() == "orthographic") {
+        svg.selectAll(".city").attr("d", function (d) {
+          return d3.geoPath().projection(projection.proj)(
+            d3
+              .geoCircle()
+              .center([d[0], d[1]])
+              .radius(d[2] / event.transform.k)
+              .precision(10)()
+          );
+        });
+      } else {
+        svg
+          .selectAll(".city")
+          .attr("cx", function (d) {
+            return projection.proj(d)[0];
+          })
+          .attr("cy", function (d) {
+            return projection.proj(d)[1];
+          });
+      }
 
-      console.log(event.transform);
+      svg
+        .selectAll(".point-label")
+        .attr("x", function (d) {
+          return projection.proj(d)[0];
+        })
+        .attr("y", function (d) {
+          return projection.proj(d)[1];
+        });
     }
   });
 

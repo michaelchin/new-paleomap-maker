@@ -39,21 +39,24 @@ export default function D3MapPage() {
   const projChangeHandler = (newProjName) => {
     if (newProjName != projName) {
       setProjName(newProjName);
-      setDirty(true);
+      //setDirty(true);
+      setRefresh(!refresh);
     }
   };
 
   const modelChangeHandler = (newModelName) => {
     if (newModelName != modelName) {
       setModelName(newModelName);
-      setDirty(true);
+      //setDirty(true);
+      setRefresh(!refresh);
     }
   };
 
   const paleoAgeChangeHandler = (newAge) => {
     if (paleoAge != newAge) {
       setPaleoAge(newAge);
-      setDirty(true);
+      //setDirty(true);
+      setRefresh(!refresh);
     }
   };
 
@@ -120,15 +123,17 @@ export default function D3MapPage() {
             paleoAge={paleoAge}
             paleoAgeChangeHandler={paleoAgeChangeHandler}
           />
-          <Button
-            disabled={!dirty}
-            className="refresh-btn "
-            size="sm"
-            onClick={() => handleRefreshButtonClicked()}
-          >
-            Refresh Map
-          </Button>
-          {dirty && (
+          {false && (
+            <Button
+              disabled={!dirty}
+              className="refresh-btn "
+              size="sm"
+              onClick={() => handleRefreshButtonClicked()}
+            >
+              Refresh Map
+            </Button>
+          )}
+          {false && (
             <div
               className="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
               role="alert"
