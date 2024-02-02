@@ -24,7 +24,8 @@ export const setupZoom = (svgRef, projection) => {
       svg.selectAll(".graticule").attr("d", path);
 
       if (projection.name.toLowerCase() == "orthographic") {
-        svg.selectAll(".city").attr("d", function (d) {
+        //keep the size of points in a globe projection
+        svg.selectAll(".path-point").attr("d", function (d) {
           return d3.geoPath().projection(projection.proj)(
             d3
               .geoCircle()
@@ -34,8 +35,9 @@ export const setupZoom = (svgRef, projection) => {
           );
         });
       } else {
+        // move the points to new locations after zooming in a rectangular projection
         svg
-          .selectAll(".city")
+          .selectAll(".circle-point")
           .attr("cx", function (d) {
             return projection.proj(d)[0];
           })
@@ -44,6 +46,7 @@ export const setupZoom = (svgRef, projection) => {
           });
       }
 
+      //move the point labels to the new locations
       svg
         .selectAll(".point-label")
         .attr("x", function (d) {

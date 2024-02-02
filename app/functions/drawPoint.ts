@@ -32,7 +32,7 @@ export const drawPoint = (
           d3.geoCircle().center([d[0], d[1]]).radius(d[2]).precision(10)()
         );
       })
-      .attr("class", "pathPoint " + className)
+      .attr("class", "path-point " + className)
       .append("svg:title")
       .text(function (d) {
         //console.log(d);
@@ -52,7 +52,7 @@ export const drawPoint = (
         return 5;
       })
       .style("fill", "blue")
-      .attr("class", "circlePoint " + className)
+      .attr("class", "circle-point " + className)
       .append("svg:title")
       .text(function (d) {
         return "Longitude: " + d[0] + "\nLatitude: " + d[1];

@@ -1,5 +1,6 @@
 import assert from "assert";
 import * as d3 from "d3";
+import { GWS_SERVER_URL } from "../gSettings";
 import { drawPoint } from "./drawPoint";
 
 export const drawCities = (svgRef, paleoAge, projection, modelName) => {
@@ -8,8 +9,8 @@ export const drawCities = (svgRef, paleoAge, projection, modelName) => {
 
   return d3
     .json(
-      //"https://gws.gplates.org/reconstruct/get_cities/?time=" +
-      "http://localhost:18000/earth/get_cities?time=" +
+      GWS_SERVER_URL +
+        "/earth/get_cities?time=" +
         paleoAge +
         "&model=" +
         modelName

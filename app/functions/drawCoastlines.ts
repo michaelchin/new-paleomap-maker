@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { GWS_SERVER_URL } from "../gSettings";
 /**
  *
  * @param svgRef
@@ -18,8 +19,8 @@ export const drawCoastlines = async (
 
   return d3
     .json(
-      //"https://gws.gplates.org/reconstruct/coastlines_low/?time=" +
-      "http://localhost:18000/reconstruct/coastlines_low/?time=" +
+      GWS_SERVER_URL +
+        "/reconstruct/coastlines_low/?time=" +
         paleoAge +
         "&model=" +
         modelName +
