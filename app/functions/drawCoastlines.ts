@@ -36,6 +36,10 @@ export const drawCoastlines = async (
         .append("path")
         .attr("d", path)
         .attr("class", "coastline")
+        .style("fill-opacity", 1)
+        .style("stroke", "blue")
+        .style("stroke-width", "0px")
+        .style("fill", "gray")
         .on("mouseover", function (d, i) {
           d3.select(this).style("fill-opacity", 0.5);
           d3.select(this).style("stroke-width", "1px");

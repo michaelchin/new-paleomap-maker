@@ -54,6 +54,13 @@ const D3SVG: React.FC<D3SVGPros> = ({
         "resize",
         window.ResizeObserver ? null : () => () => svg.dispatch("toggle")
       );
+    svg.attr("width", d3SVGRef.current.clientWidth);
+    svg.attr("height", d3SVGRef.current.clientHeight);
+    svg
+      .append("rect")
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr("fill", "white");
   }, []);
 
   useEffect(() => {
@@ -71,17 +78,18 @@ const D3SVG: React.FC<D3SVGPros> = ({
   }, [projection]);
 
   return (
-    <svg
-      ref={d3SVGRef}
-      id="map-svg"
+    <div
+      id="svg-container"
       style={{
         aspectRatio: "2/1",
         width: "100%",
         marginRight: "0px",
         marginLeft: "0px",
-        background: "lightgrey",
+        background: "white",
       }}
-    ></svg>
+    >
+      <svg ref={d3SVGRef} id="map-svg" width="100%" height="100%"></svg>
+    </div>
   );
 };
 

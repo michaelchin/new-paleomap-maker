@@ -11,7 +11,13 @@ export const drawGraticule = (svgRef, projection) => {
 
   svg.selectAll(".graticules").remove();
 
-  let graticuleLayer = svg.append("g").attr("class", "graticules");
+  let graticuleLayer = svg
+    .append("g")
+    .attr("class", "graticules")
+    .style("fill", "none")
+    .style("stroke", "#777")
+    .style("stroke-width", "0.5px")
+    .style("stroke-opacity", "0.5");
 
   var graticule = d3.geoGraticule();
   graticuleLayer

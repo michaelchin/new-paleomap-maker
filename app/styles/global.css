@@ -23,12 +23,6 @@ img {
   max-width: 100%;
   height: auto;
 }
-.graticule {
-  fill: none;
-  stroke: #777;
-  stroke-width: 0.5px;
-  stroke-opacity: 0.5;
-}
 
 .svg-container,
 .control-container {
@@ -49,13 +43,6 @@ img {
   margin: 10px auto;
 }
 
-.coastlines {
-  fill-opacity: 1;
-  stroke: blue;
-  stroke-width: 0px;
-  fill: gray;
-}
-
 .dropback {
   position: absolute;
   width: 200vw;
@@ -73,4 +60,8 @@ img {
 #dropdown {
   max-height: 350px;
   overflow: scroll;
+}
+
+#buttons-container {
+  margin-top: 30px;
 }

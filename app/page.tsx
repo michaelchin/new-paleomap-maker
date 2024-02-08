@@ -66,18 +66,18 @@ export default function D3MapPage() {
   };
 
   /**
-   * TODO: get computed CSS?
-   * https://github.com/Hypercubed/svgsaver
-   * https://github.com/exupero/saveSvgAsPng
-   * https://takuti.me/note/javascript-save-svg-as-image/
+   * download handler
    */
   const handleDownloadButtonClicked = () => {
-    let svgData = document.getElementById("map-svg").outerHTML;
-    let svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    const svgData = document.getElementById("map-svg");
+    const svgString = new XMLSerializer().serializeToString(svgData);
+    let svgBlob = new Blob([svgString], {
+      type: "image/svg+xml;charset=utf-8",
+    });
     let svgUrl = URL.createObjectURL(svgBlob);
     let downloadLink = document.createElement("a");
     downloadLink.href = svgUrl;
-    downloadLink.download = "newesttree.svg";
+    downloadLink.download = "paleomap.svg";
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
@@ -143,7 +143,7 @@ export default function D3MapPage() {
               "Refresh Map" button to apply changes and redraw the map.
             </div>
           )}
-          {false && (
+          <div id="buttons-container">
             <Button
               className="download-btn"
               size="sm"
@@ -152,7 +152,7 @@ export default function D3MapPage() {
             >
               Download
             </Button>
-          )}
+          </div>
         </div>
       </div>
       <ModelInfo modelName={modelName} modelList={modelList} />
