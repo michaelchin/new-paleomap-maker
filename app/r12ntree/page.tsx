@@ -56,6 +56,8 @@ export default function R12nTreePage() {
   };
 
   /**
+   * given a set of "tree edges", find the "root".
+   * the "root" does not have a parent
    *
    * @param edges
    * @returns

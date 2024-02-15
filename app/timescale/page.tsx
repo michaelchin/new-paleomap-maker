@@ -9,23 +9,82 @@ ReactGA.initialize("G-SK40RD0DHH");
 
 /**
  *
+ * @param trees
+ * @param name
  * @returns
  */
+const findSubTree = (trees, name: string) => {
+  let ret = {};
+  for (let i = 0; i < trees.length; i++) {
+    depth_first_search(trees[i], (node) => {
+      if (node.pid.toString() == name) {
+        ret = node;
+        return false;
+      }
+      return true;
+    });
+  }
+  return ret;
+};
 
+/**
+ *
+ * @param tree
+ * @param callback
+ */
+const depth_first_search = (tree, callback) => {
+  let ret = callback(tree);
+  if (!ret) {
+    return;
+  }
+  for (let i = 0; i < tree["children"].length; i++) {
+    depth_first_search(tree["children"][i], callback);
+  }
+};
+
+/**
+ *
+ * @returns
+ */
 const TimescalePage = () => {
   const timescaleContainerDiv = React.useRef(null);
 
   const drawTimescalePlot = () => {
     let data = { name: "root", value: 0, children: [] };
     let phanerozoic = { name: "Phanerozoic", value: 0, children: [] };
+    let proterozoic = { name: "Proterozoic", value: 0, children: [] };
+    let archean = { name: "Archean", value: 0, children: [] };
     data.children.push(phanerozoic);
-    data.children.push({ name: "Proterozoic", value: 1, children: [] });
-    data.children.push({ name: "Archean", value: 1, children: [] });
+    data.children.push(proterozoic);
+    data.children.push(archean);
     data.children.push({ name: "Hadeon", value: 1, children: [] });
 
     phanerozoic.children.push({ name: "Cenozoic", value: 1, children: [] });
     phanerozoic.children.push({ name: "Mesozoic", value: 1, children: [] });
     phanerozoic.children.push({ name: "Paleozoic", value: 1, children: [] });
+
+    proterozoic.children.push({
+      name: "Paleoproterozoic",
+      value: 1,
+      children: [],
+    });
+    proterozoic.children.push({
+      name: "Mesoproterozoic",
+      value: 1,
+      children: [],
+    });
+    proterozoic.children.push({
+      name: "Neoproterozoic",
+      value: 1,
+      children: [],
+    });
+
+    archean.children.push({ name: "Eoarchean", value: 1, children: [] });
+    archean.children.push({ name: "Paleoarchean", value: 1, children: [] });
+    archean.children.push({ name: "Mesoarchean", value: 1, children: [] });
+    archean.children.push({ name: "Neoarchean", value: 1, children: [] });
+
+    const breadcrumbs = ["root", "Phanerozoic"];
 
     let height = 600,
       width = 200;
@@ -49,7 +108,7 @@ const TimescalePage = () => {
       .style("background", "white");
 
     // add left panel
-    const leftPanel = svg.append("g").data([root]).attr("class", "left-panel");
+    const leftPanel = svg.append("g").attr("class", "left-panel");
     const leftPanelWidth = 20;
 
     leftPanel
@@ -59,10 +118,22 @@ const TimescalePage = () => {
       .attr("fill-opacity", 0.6)
       .attr("fill", "blue");
 
-    leftPanel
-      .append("text")
-      .text("root->level 1->level 2")
+    const gBreadcrumbs = leftPanel
+      .append("g")
+      .attr("class", "g-breadcrumbs")
       .attr("transform", "rotate(90) translate(20,-5)");
+
+    let breadcrumbsTxt = gBreadcrumbs.append("text");
+    for (let i = 0; i < breadcrumbs.length; i++) {
+      breadcrumbsTxt
+        .append("tspan")
+        .attr("class", "breadcrumbs")
+        .text(breadcrumbs[i])
+        .attr("text-decoration", "underline")
+        .style("cursor", "pointer")
+        .on("click", (e) => alert(e.target.innerHTML));
+      breadcrumbsTxt.append("tspan").attr("class", "breadcrumbs").text(" >> ");
+    }
 
     // Add a clipPath: everything out of this area won't be drawn.
     svg
@@ -82,40 +153,53 @@ const TimescalePage = () => {
       .attr("transform", "translate(" + leftPanelWidth + ",0)")
       .attr("clip-path", "url(#clip)");
 
-    const timescaleCells = rightPanel
+    const gTimescaleCells = rightPanel
       .append("g")
       .attr("class", "timescale-cells");
-    // add timescale cells.
-    const cell = timescaleCells
-      .selectAll(".timescale-cell")
-      .data(root.descendants())
-      .enter()
-      .append("g")
-      .attr("class", ".timescale-cell")
-      .attr("transform", (d) => `translate(${d.y0 - width},${d.x0})`);
 
-    cell
-      .append("rect")
-      .attr("width", (d) => d.y1 - d.y0 - 3)
-      .attr("height", (d) => d.x1 - d.x0 - 3)
-      .attr("fill-opacity", 0.6)
-      .attr("fill", "grey")
-      .style("cursor", "pointer")
-      .on("click", clicked);
+    const update = (svgGroup, _root) => {
+      svg.selectAll(".timescale-cell").remove();
 
-    const text = cell
-      .append("text")
-      .style("user-select", "none")
-      .attr("pointer-events", "none")
-      .attr("x", 4)
-      .attr("y", 13)
-      .text((d: any) => d.data.name);
+      // add timescale cells.
+      const cell = svgGroup
+        .selectAll(".timescale-cell")
+        .data(_root.descendants())
+        .enter()
+        .append("g")
+        .attr("class", "timescale-cell")
+        .attr("transform", (d: any) => `translate(${d.y0 - width},${d.x0})`);
+
+      cell
+        .append("rect")
+        .attr("width", (d: any) => d.y1 - d.y0 - 3)
+        .attr("height", (d: any) => d.x1 - d.x0 - 3)
+        .attr("fill-opacity", 0.6)
+        .attr("fill", "grey")
+        .style("cursor", "pointer")
+        .on("click", clicked);
+
+      const text = cell
+        .append("text")
+        .style("user-select", "none")
+        .attr("pointer-events", "none")
+        .attr("x", 4)
+        .attr("y", 13)
+        .text((d: any) => d.data.name);
+    };
 
     function clicked(event, node) {
-      console.log(event);
-      console.log(node);
-      timescaleCells.attr("transform", `translate(${-node.y0},0)`);
+      //console.log(event);
+      //console.log(node);
+      if (node.data.children.length > 0) {
+        const hhh = d3.hierarchy(node.data).sum((d) => d.value);
+        const newRoot = d3.partition().size([height, (hhh.height + 1) * width])(
+          hhh
+        );
+        update(gTimescaleCells, newRoot);
+      }
     }
+
+    update(gTimescaleCells, root);
   };
 
   useEffect(() => {
