@@ -13,17 +13,17 @@ ReactGA.initialize("G-SK40RD0DHH");
  * @param name
  * @returns
  */
-const findSubTree = (trees, name: string) => {
+const findSubTree = (root, name: string) => {
   let ret = {};
-  for (let i = 0; i < trees.length; i++) {
-    depth_first_search(trees[i], (node) => {
-      if (node.pid.toString() == name) {
-        ret = node;
-        return false;
-      }
-      return true;
-    });
-  }
+
+  depth_first_search(root, (node) => {
+    if (node.name.toString() == name) {
+      ret = node;
+      return false;
+    }
+    return true;
+  });
+
   return ret;
 };
 
@@ -49,50 +49,47 @@ const depth_first_search = (tree, callback) => {
 const TimescalePage = () => {
   const timescaleContainerDiv = React.useRef(null);
 
-  const drawTimescalePlot = () => {
-    let data = { name: "root", value: 0, children: [] };
-    let phanerozoic = { name: "Phanerozoic", value: 0, children: [] };
-    let proterozoic = { name: "Proterozoic", value: 0, children: [] };
-    let archean = { name: "Archean", value: 0, children: [] };
-    data.children.push(phanerozoic);
-    data.children.push(proterozoic);
-    data.children.push(archean);
-    data.children.push({ name: "Hadeon", value: 1, children: [] });
+  /*
+  var data = { name: "root", value: 0, children: [] };
+  let phanerozoic = { name: "Phanerozoic", value: 0, children: [] };
+  let proterozoic = { name: "Proterozoic", value: 0, children: [] };
+  let archean = { name: "Archean", value: 0, children: [] };
+  data.children.push(phanerozoic);
+  data.children.push(proterozoic);
+  data.children.push(archean);
+  data.children.push({ name: "Hadeon", value: 1, children: [] });
 
-    phanerozoic.children.push({ name: "Cenozoic", value: 1, children: [] });
-    phanerozoic.children.push({ name: "Mesozoic", value: 1, children: [] });
-    phanerozoic.children.push({ name: "Paleozoic", value: 1, children: [] });
+  phanerozoic.children.push({ name: "Cenozoic", value: 1, children: [] });
+  phanerozoic.children.push({ name: "Mesozoic", value: 1, children: [] });
+  phanerozoic.children.push({ name: "Paleozoic", value: 1, children: [] });
 
-    proterozoic.children.push({
-      name: "Paleoproterozoic",
-      value: 1,
-      children: [],
-    });
-    proterozoic.children.push({
-      name: "Mesoproterozoic",
-      value: 1,
-      children: [],
-    });
-    proterozoic.children.push({
-      name: "Neoproterozoic",
-      value: 1,
-      children: [],
-    });
+  proterozoic.children.push({
+    name: "Paleoproterozoic",
+    value: 1,
+    children: [],
+  });
+  proterozoic.children.push({
+    name: "Mesoproterozoic",
+    value: 1,
+    children: [],
+  });
+  proterozoic.children.push({
+    name: "Neoproterozoic",
+    value: 1,
+    children: [],
+  });
 
-    archean.children.push({ name: "Eoarchean", value: 1, children: [] });
-    archean.children.push({ name: "Paleoarchean", value: 1, children: [] });
-    archean.children.push({ name: "Mesoarchean", value: 1, children: [] });
-    archean.children.push({ name: "Neoarchean", value: 1, children: [] });
+  archean.children.push({ name: "Eoarchean", value: 1, children: [] });
+  archean.children.push({ name: "Paleoarchean", value: 1, children: [] });
+  archean.children.push({ name: "Mesoarchean", value: 1, children: [] });
+  archean.children.push({ name: "Neoarchean", value: 1, children: [] });
+  */
 
-    const breadcrumbs = ["root", "Phanerozoic"];
+  const drawTimescalePlot = (data) => {
+    var breadcrumbs = ["root"];
 
     let height = 600,
       width = 200;
-    // Compute the layout.
-    const hierarchy = d3.hierarchy(data).sum((d) => d.value);
-    const root = d3.partition().size([height, (hierarchy.height + 1) * width])(
-      hierarchy
-    );
 
     let svgContainer = d3.select(timescaleContainerDiv.current);
     let svg = svgContainer
@@ -123,17 +120,23 @@ const TimescalePage = () => {
       .attr("class", "g-breadcrumbs")
       .attr("transform", "rotate(90) translate(20,-5)");
 
-    let breadcrumbsTxt = gBreadcrumbs.append("text");
-    for (let i = 0; i < breadcrumbs.length; i++) {
-      breadcrumbsTxt
-        .append("tspan")
-        .attr("class", "breadcrumbs")
-        .text(breadcrumbs[i])
-        .attr("text-decoration", "underline")
-        .style("cursor", "pointer")
-        .on("click", (e) => alert(e.target.innerHTML));
-      breadcrumbsTxt.append("tspan").attr("class", "breadcrumbs").text(" >> ");
-    }
+    var breadcrumbsTxt = gBreadcrumbs.append("text");
+    const updateBreadcrumbs = () => {
+      breadcrumbsTxt.selectAll(".breadcrumbs").remove();
+      for (let i = 0; i < breadcrumbs.length; i++) {
+        breadcrumbsTxt
+          .append("tspan")
+          .attr("class", "breadcrumbs")
+          .text(breadcrumbs[i])
+          .attr("text-decoration", "underline")
+          .style("cursor", "pointer")
+          .on("click", (e) => breadcrumbsClicked(e.target.innerHTML));
+        breadcrumbsTxt
+          .append("tspan")
+          .attr("class", "breadcrumbs")
+          .text(" >> ");
+      }
+    };
 
     // Add a clipPath: everything out of this area won't be drawn.
     svg
@@ -157,8 +160,19 @@ const TimescalePage = () => {
       .append("g")
       .attr("class", "timescale-cells");
 
-    const update = (svgGroup, _root) => {
+    /**
+     *
+     * @param svgGroup
+     * @param _root
+     */
+    const update = (svgGroup, data) => {
       svg.selectAll(".timescale-cell").remove();
+
+      // Compute the layout.
+      const hierarchy = d3.hierarchy(data).sum((d) => d.value);
+      const _root = d3
+        .partition()
+        .size([height, (hierarchy.height + 1) * width])(hierarchy);
 
       // add timescale cells.
       const cell = svgGroup
@@ -176,7 +190,7 @@ const TimescalePage = () => {
         .attr("fill-opacity", 0.6)
         .attr("fill", "grey")
         .style("cursor", "pointer")
-        .on("click", clicked);
+        .on("click", cellClicked);
 
       const text = cell
         .append("text")
@@ -187,19 +201,42 @@ const TimescalePage = () => {
         .text((d: any) => d.data.name);
     };
 
-    function clicked(event, node) {
+    /**
+     * timescale cell was clicked
+     * @param event
+     * @param node
+     */
+    function cellClicked(event, node) {
       //console.log(event);
       //console.log(node);
+
       if (node.data.children.length > 0) {
-        const hhh = d3.hierarchy(node.data).sum((d) => d.value);
-        const newRoot = d3.partition().size([height, (hhh.height + 1) * width])(
-          hhh
-        );
-        update(gTimescaleCells, newRoot);
+        update(gTimescaleCells, node.data);
+        breadcrumbs.push(node.data.name);
+        updateBreadcrumbs();
       }
     }
 
-    update(gTimescaleCells, root);
+    /**
+     * breadcrumbs was clicked
+     * @param name
+     */
+    function breadcrumbsClicked(name) {
+      let subtree = findSubTree(data, name);
+      update(gTimescaleCells, subtree);
+      let newBreadcrumbs = [];
+      for (let i = 0; i < breadcrumbs.length; i++) {
+        newBreadcrumbs.push(breadcrumbs[i]);
+        if (name == breadcrumbs[i]) {
+          break;
+        }
+      }
+      breadcrumbs = newBreadcrumbs;
+      updateBreadcrumbs();
+    }
+
+    update(gTimescaleCells, data);
+    updateBreadcrumbs();
   };
 
   useEffect(() => {
@@ -210,7 +247,11 @@ const TimescalePage = () => {
         svgContainer.node().append(data.documentElement);
         let oldSVG = svgContainer.select("svg");
 
-        drawTimescalePlot();
+        d3.json("/json/timescale-gsa-0.6.json")
+          .then((data) => {
+            drawTimescalePlot(data);
+          })
+          .catch((e) => console.log(e));
 
         let ids = ["cenozoic", "mesozoic", "paleozoic", "precambrian"];
         let xTranlate = [-38, -232, -421, -582.5];
@@ -282,7 +323,7 @@ const TimescalePage = () => {
 
   const handleDownloadButtonClicked = (name) => {
     const svgData = document.getElementById(name + "-svg");
-    console.log(svgData);
+    //console.log(svgData);
     const svgString = new XMLSerializer().serializeToString(svgData);
     let svgBlob = new Blob([svgString], {
       type: "image/svg+xml;charset=utf-8",
@@ -294,6 +335,15 @@ const TimescalePage = () => {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
+  };
+
+  const downloadJSON = () => {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(
+      new Blob([JSON.stringify(data)], { type: "application/json" })
+    );
+    a.download = "myFile.json";
+    a.click();
   };
 
   return (
@@ -339,6 +389,14 @@ const TimescalePage = () => {
           onClick={() => handleDownloadButtonClicked("precambrian")}
         >
           Download precambrian
+        </Button>
+        <Button
+          className="download-btn"
+          size="sm"
+          color="blue"
+          onClick={() => downloadJSON()}
+        >
+          Download Timescale JSON
         </Button>
       </div>
     </>

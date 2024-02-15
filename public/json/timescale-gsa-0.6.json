@@ -1,0 +1,111 @@
+{
+    "name": "root",
+    "value": 0,
+    "children": [
+        {
+            "name": "Phanerozoic",
+            "value": 0,
+            "children": [
+                {
+                    "name": "Cenozoic",
+                    "value": 0,
+                    "children": [
+                        {
+                            "name": "Quaternary",
+                            "value": 1,
+                            "children": []
+                        },
+                        {
+                            "name": "Neogene",
+                            "value": 1,
+                            "children": []
+                        },
+                        {
+                            "name": "Paleogene",
+                            "value": 1,
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Mesozoic",
+                    "value": 0,
+                    "children": [
+                        {
+                            "name": "Triassic",
+                            "value": 1,
+                            "children": []
+                        },
+                        {
+                            "name": "Jurassic",
+                            "value": 1,
+                            "children": []
+                        },
+                        {
+                            "name": "Cretaceous",
+                            "value": 1,
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Paleozoic",
+                    "value": 1,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "Proterozoic",
+            "value": 0,
+            "children": [
+                {
+                    "name": "Paleoproterozoic",
+                    "value": 1,
+                    "children": []
+                },
+                {
+                    "name": "Mesoproterozoic",
+                    "value": 1,
+                    "children": []
+                },
+                {
+                    "name": "Neoproterozoic",
+                    "value": 1,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "Archean",
+            "value": 0,
+            "children": [
+                {
+                    "name": "Eoarchean",
+                    "value": 1,
+                    "children": []
+                },
+                {
+                    "name": "Paleoarchean",
+                    "value": 1,
+                    "children": []
+                },
+                {
+                    "name": "Mesoarchean",
+                    "value": 1,
+                    "children": []
+                },
+                {
+                    "name": "Neoarchean",
+                    "value": 1,
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "Hadeon",
+            "value": 1,
+            "children": []
+        }
+    ]
+}
