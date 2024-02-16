@@ -48,79 +48,64 @@ const depth_first_search = (tree, callback) => {
  */
 const TimescalePage = () => {
   const timescaleContainerDiv = React.useRef(null);
+  const timescaleIcicleContainerDiv = React.useRef(null);
+  var timescaleData;
 
-  /*
-  var data = { name: "root", value: 0, children: [] };
-  let phanerozoic = { name: "Phanerozoic", value: 0, children: [] };
-  let proterozoic = { name: "Proterozoic", value: 0, children: [] };
-  let archean = { name: "Archean", value: 0, children: [] };
-  data.children.push(phanerozoic);
-  data.children.push(proterozoic);
-  data.children.push(archean);
-  data.children.push({ name: "Hadeon", value: 1, children: [] });
-
-  phanerozoic.children.push({ name: "Cenozoic", value: 1, children: [] });
-  phanerozoic.children.push({ name: "Mesozoic", value: 1, children: [] });
-  phanerozoic.children.push({ name: "Paleozoic", value: 1, children: [] });
-
-  proterozoic.children.push({
-    name: "Paleoproterozoic",
-    value: 1,
-    children: [],
-  });
-  proterozoic.children.push({
-    name: "Mesoproterozoic",
-    value: 1,
-    children: [],
-  });
-  proterozoic.children.push({
-    name: "Neoproterozoic",
-    value: 1,
-    children: [],
-  });
-
-  archean.children.push({ name: "Eoarchean", value: 1, children: [] });
-  archean.children.push({ name: "Paleoarchean", value: 1, children: [] });
-  archean.children.push({ name: "Mesoarchean", value: 1, children: [] });
-  archean.children.push({ name: "Neoarchean", value: 1, children: [] });
-  */
-
+  /**
+   *
+   * @param data
+   */
   const drawTimescalePlot = (data) => {
+    //do not redraw the svg if it has already been done.
+    if (timescaleIcicleContainerDiv.current.querySelector("svg") != null) {
+      return;
+    }
+
     var breadcrumbs = ["root"];
 
     let height = 600,
-      width = 200;
+      width = 240;
 
-    let svgContainer = d3.select(timescaleContainerDiv.current);
-    let svg = svgContainer
+    let svg = d3
+      .select(timescaleIcicleContainerDiv.current)
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .attr("id", "timescale-plot-svg")
+      .attr("id", "timescale-icicle-svg")
       .style("display", "block")
-      .style("position", "absolute")
-      .style("top", "20px")
-      .style("left", "900px")
-      .style("margin", "10px")
-      .style("background", "white");
+      .style("margin", "10px auto")
+      .style("background", "red");
 
     // add left panel
     const leftPanel = svg.append("g").attr("class", "left-panel");
     const leftPanelWidth = 20;
-
     leftPanel
       .append("rect")
       .attr("width", leftPanelWidth)
       .attr("height", height)
-      .attr("fill-opacity", 0.6)
-      .attr("fill", "blue");
+      .attr("fill-opacity", 1)
+      .attr("fill", "cyan");
 
+    // add left panel
+    const rightPanel = svg.append("g").attr("class", "right-panel");
+    const rightPanelWidth = 40;
+    rightPanel
+      .append("rect")
+      .attr("width", rightPanelWidth)
+      .attr("height", height)
+      .attr("fill-opacity", 1)
+      .attr("fill", "lightgrey")
+      .attr("transform", `translate(${width - rightPanelWidth} ,0)`);
+
+    // add breadcrumbs
     const gBreadcrumbs = leftPanel
       .append("g")
       .attr("class", "g-breadcrumbs")
       .attr("transform", "rotate(90) translate(20,-5)");
-
     var breadcrumbsTxt = gBreadcrumbs.append("text");
+    /**
+     * update breadcrumbs
+     */
     const updateBreadcrumbs = () => {
       breadcrumbsTxt.selectAll(".breadcrumbs").remove();
       for (let i = 0; i < breadcrumbs.length; i++) {
@@ -128,8 +113,20 @@ const TimescalePage = () => {
           .append("tspan")
           .attr("class", "breadcrumbs")
           .text(breadcrumbs[i])
-          .attr("text-decoration", "underline")
-          .style("cursor", "pointer")
+          .attr("text-decoration", (d) => {
+            if (i < breadcrumbs.length - 1) {
+              return "underline";
+            } else {
+              return "";
+            }
+          })
+          .style("cursor", (d) => {
+            if (i < breadcrumbs.length - 1) {
+              return "pointer";
+            } else {
+              return "";
+            }
+          })
           .on("click", (e) => breadcrumbsClicked(e.target.innerHTML));
         breadcrumbsTxt
           .append("tspan")
@@ -144,60 +141,82 @@ const TimescalePage = () => {
       .append("SVG:clipPath")
       .attr("id", "clip")
       .append("SVG:rect")
-      .attr("width", width - leftPanelWidth)
+      .attr("width", width - leftPanelWidth - rightPanelWidth)
       .attr("height", height)
       .attr("x", 0)
       .attr("y", 0);
 
-    // add right panel
-    const rightPanel = svg
+    // add central panel
+    const centralPanel = svg
       .append("g")
-      .attr("class", "right-panel")
+      .attr("class", "central-panel")
       .attr("transform", "translate(" + leftPanelWidth + ",0)")
       .attr("clip-path", "url(#clip)");
 
-    const gTimescaleCells = rightPanel
+    const gTimescaleCells = centralPanel
       .append("g")
       .attr("class", "timescale-cells");
 
     /**
      *
-     * @param svgGroup
+     * @param timescaleGroup
      * @param _root
      */
-    const update = (svgGroup, data) => {
+    const update = (timescaleGroup, data) => {
       svg.selectAll(".timescale-cell").remove();
 
       // Compute the layout.
       const hierarchy = d3.hierarchy(data).sum((d) => d.value);
       const _root = d3
         .partition()
-        .size([height, (hierarchy.height + 1) * width])(hierarchy);
+        .size([
+          height,
+          (hierarchy.height + 1) * (width - rightPanelWidth - leftPanelWidth),
+        ])(hierarchy);
 
       // add timescale cells.
-      const cell = svgGroup
+      const cell = timescaleGroup
         .selectAll(".timescale-cell")
         .data(_root.descendants())
         .enter()
         .append("g")
         .attr("class", "timescale-cell")
-        .attr("transform", (d: any) => `translate(${d.y0 - width},${d.x0})`);
+        .attr(
+          "transform",
+          (d: any) =>
+            `translate(${d.y0 - width + rightPanelWidth + leftPanelWidth},${
+              d.x0
+            })`
+        );
 
       cell
         .append("rect")
-        .attr("width", (d: any) => d.y1 - d.y0 - 3)
-        .attr("height", (d: any) => d.x1 - d.x0 - 3)
-        .attr("fill-opacity", 0.6)
-        .attr("fill", "grey")
-        .style("cursor", "pointer")
+        .attr("width", (d: any) => d.y1 - d.y0)
+        .attr("height", (d: any) => d.x1 - d.x0)
+        .attr("fill-opacity", 1)
+        .attr("fill", (d: any) => d.data.color)
+        .style("cursor", (d: any) => {
+          if (d.data.children.length) {
+            return "pointer";
+          } else {
+            return "";
+          }
+        })
         .on("click", cellClicked);
 
+      let fontSize = Number(
+        window
+          .getComputedStyle(cell.node())
+          .getPropertyValue("font-size")
+          .match(/\d+/)[0]
+      );
       const text = cell
         .append("text")
         .style("user-select", "none")
         .attr("pointer-events", "none")
-        .attr("x", 4)
-        .attr("y", 13)
+        .attr("x", (d: any) => (d.y1 - d.y0) / 2)
+        .attr("y", (d: any) => (d.x1 - d.x0 + fontSize) / 2)
+        .attr("text-anchor", "middle")
         .text((d: any) => d.data.name);
     };
 
@@ -240,18 +259,21 @@ const TimescalePage = () => {
   };
 
   useEffect(() => {
-    let svgContainer = d3.select(timescaleContainerDiv.current);
+    //draw the time scale icicle
+    let svgIcicleContainer = d3.select(timescaleIcicleContainerDiv.current);
+    d3.json("/json/timescale-gsa-0.6.json")
+      .then((data) => {
+        timescaleData = data;
+        drawTimescalePlot(data);
+      })
+      .catch((e) => console.log(e));
 
+    //draw GSA time scale v0.6....
+    let svgContainer = d3.select(timescaleContainerDiv.current);
     d3.xml("/svg/timescl.svg").then((data) => {
       if (timescaleContainerDiv.current.querySelector("svg") == null) {
         svgContainer.node().append(data.documentElement);
         let oldSVG = svgContainer.select("svg");
-
-        d3.json("/json/timescale-gsa-0.6.json")
-          .then((data) => {
-            drawTimescalePlot(data);
-          })
-          .catch((e) => console.log(e));
 
         let ids = ["cenozoic", "mesozoic", "paleozoic", "precambrian"];
         let xTranlate = [-38, -232, -421, -582.5];
@@ -316,11 +338,13 @@ const TimescalePage = () => {
       }
     });
 
-    return () => {
-      svgContainer.empty();
-    };
+    return () => {};
   }, []);
 
+  /**
+   *
+   * @param name
+   */
   const handleDownloadButtonClicked = (name) => {
     const svgData = document.getElementById(name + "-svg");
     //console.log(svgData);
@@ -337,17 +361,28 @@ const TimescalePage = () => {
     document.body.removeChild(downloadLink);
   };
 
+  /**
+   *
+   */
   const downloadJSON = () => {
     var a = document.createElement("a");
     a.href = URL.createObjectURL(
-      new Blob([JSON.stringify(data)], { type: "application/json" })
+      new Blob([JSON.stringify(timescaleData)], { type: "application/json" })
     );
-    a.download = "myFile.json";
+    a.download = "timescale-gsa-v0.6.json";
     a.click();
   };
 
   return (
     <>
+      <div
+        ref={timescaleIcicleContainerDiv}
+        id="timescale-icicle-container"
+        style={{
+          marginRight: "0px",
+          marginLeft: "0px",
+        }}
+      ></div>
       <div
         ref={timescaleContainerDiv}
         id="timescale-container"
@@ -390,14 +425,16 @@ const TimescalePage = () => {
         >
           Download precambrian
         </Button>
-        <Button
-          className="download-btn"
-          size="sm"
-          color="blue"
-          onClick={() => downloadJSON()}
-        >
-          Download Timescale JSON
-        </Button>
+        {false && (
+          <Button
+            className="download-btn"
+            size="sm"
+            color="blue"
+            onClick={() => downloadJSON()}
+          >
+            Download Timescale JSON
+          </Button>
+        )}
       </div>
     </>
   );

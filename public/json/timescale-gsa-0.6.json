@@ -5,24 +5,29 @@
         {
             "name": "Phanerozoic",
             "value": 0,
+            "color": "#8bab79",
             "children": [
                 {
                     "name": "Cenozoic",
                     "value": 0,
+                    "color": "#f8ed00",
                     "children": [
                         {
                             "name": "Quaternary",
                             "value": 1,
+                            "color": "#fff799",
                             "children": []
                         },
                         {
                             "name": "Neogene",
                             "value": 1,
+                            "color": "#ffdd00",
                             "children": []
                         },
                         {
                             "name": "Paleogene",
                             "value": 1,
+                            "color": "#f9a870",
                             "children": []
                         }
                     ]
@@ -30,20 +35,24 @@
                 {
                     "name": "Mesozoic",
                     "value": 0,
+                    "color": "#4dc6e0",
                     "children": [
                         {
-                            "name": "Triassic",
+                            "name": "Cretaceous",
                             "value": 1,
+                            "color": "#88c86f",
                             "children": []
                         },
                         {
                             "name": "Jurassic",
                             "value": 1,
+                            "color": "#00b9e7",
                             "children": []
                         },
                         {
-                            "name": "Cretaceous",
+                            "name": "Triassic",
                             "value": 1,
+                            "color": "#8f53a1",
                             "children": []
                         }
                     ]
@@ -51,6 +60,7 @@
                 {
                     "name": "Paleozoic",
                     "value": 1,
+                    "color": "#9ec2a6",
                     "children": []
                 }
             ]
@@ -58,20 +68,24 @@
         {
             "name": "Proterozoic",
             "value": 0,
+            "color": "#f05b78",
             "children": [
                 {
-                    "name": "Paleoproterozoic",
+                    "name": "Neoproterozoic",
                     "value": 1,
+                    "color": "#fcba63",
                     "children": []
                 },
                 {
                     "name": "Mesoproterozoic",
                     "value": 1,
+                    "color": "#fcbc7e",
                     "children": []
                 },
                 {
-                    "name": "Neoproterozoic",
+                    "name": "Paleoproterozoic",
                     "value": 1,
+                    "color": "#f16681",
                     "children": []
                 }
             ]
@@ -79,25 +93,30 @@
         {
             "name": "Archean",
             "value": 0,
+            "color": "#ed2591",
             "children": [
                 {
-                    "name": "Eoarchean",
+                    "name": "Neoarchean",
                     "value": 1,
-                    "children": []
-                },
-                {
-                    "name": "Paleoarchean",
-                    "value": 1,
+                    "color": "#f7adc4",
                     "children": []
                 },
                 {
                     "name": "Mesoarchean",
                     "value": 1,
+                    "color": "#f386ae",
                     "children": []
                 },
                 {
-                    "name": "Neoarchean",
+                    "name": "Paleoarchean",
                     "value": 1,
+                    "color": "#f067a6",
+                    "children": []
+                },
+                {
+                    "name": "Eoarchean",
+                    "value": 1,
+                    "color": "#d80b8c",
                     "children": []
                 }
             ]
@@ -105,6 +124,7 @@
         {
             "name": "Hadeon",
             "value": 1,
+            "color": "#d9394e",
             "children": []
         }
     ]
