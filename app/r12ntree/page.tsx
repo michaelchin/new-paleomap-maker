@@ -20,7 +20,7 @@ const aspectRatio = [16, 9];
  * @returns
  */
 export default function R12nTreePage() {
-  const [modelName, setModelName] = React.useState("Muller2019");
+  const [modelName, setModelName] = React.useState("Cao2024");
   const [paleoAge, setPaleoAge] = React.useState(140);
   const [dirty, setDirty] = React.useState(false);
   const [refresh, setRefresh] = React.useState(false);
