@@ -66,11 +66,14 @@ const TimescalePage = () => {
     let height = 600,
       width = 240;
 
+    let paddingTop = 5,
+      paddingBottom = 5;
+
     let svg = d3
       .select(timescaleIcicleContainerDiv.current)
       .append("svg")
       .attr("width", width)
-      .attr("height", height)
+      .attr("height", height + paddingBottom + paddingTop)
       .attr("id", "timescale-icicle-svg")
       .style("display", "block")
       .style("margin", "10px auto")
@@ -82,20 +85,25 @@ const TimescalePage = () => {
     leftPanel
       .append("rect")
       .attr("width", leftPanelWidth)
-      .attr("height", height)
+      .attr("height", height + paddingBottom + paddingTop)
       .attr("fill-opacity", 1)
-      .attr("fill", "cyan");
+      .attr("fill", "cyan")
+      .attr("transform", `translate(0 ,0)`);
 
     // add left panel
-    const rightPanel = svg.append("g").attr("class", "right-panel");
     const rightPanelWidth = 40;
+    const rightPanel = svg
+      .append("g")
+      .attr("class", "right-panel")
+      .attr("transform", `translate(${width - rightPanelWidth},0)`);
     rightPanel
       .append("rect")
       .attr("width", rightPanelWidth)
-      .attr("height", height)
+      .attr("height", height + paddingBottom + paddingTop)
       .attr("fill-opacity", 1)
-      .attr("fill", "lightgrey")
-      .attr("transform", `translate(${width - rightPanelWidth} ,0)`);
+      .attr("fill", "lightgrey");
+
+    var gY = rightPanel.append("g").attr("class", "y-axis");
 
     // add breadcrumbs
     const gBreadcrumbs = leftPanel
@@ -150,7 +158,7 @@ const TimescalePage = () => {
     const centralPanel = svg
       .append("g")
       .attr("class", "central-panel")
-      .attr("transform", "translate(" + leftPanelWidth + ",0)")
+      .attr("transform", `translate(${leftPanelWidth},${paddingTop})`)
       .attr("clip-path", "url(#clip)");
 
     const gTimescaleCells = centralPanel
@@ -166,7 +174,27 @@ const TimescalePage = () => {
       svg.selectAll(".timescale-cell").remove();
 
       // Compute the layout.
-      const hierarchy = d3.hierarchy(data).sum((d) => d.value);
+      const hierarchy = d3.hierarchy(data).sum((d) => {
+        if (d.children.length > 0) {
+          return 0;
+        } else {
+          let size = 1;
+          if (d.size) {
+            size = d.size;
+          } else {
+            if (d.begin && d.end) {
+              size = d.begin - d.end;
+            }
+          }
+
+          if (d.size_factor) {
+            return size * d.size_factor;
+          } else {
+            return size;
+          }
+        }
+      });
+
       const _root = d3
         .partition()
         .size([
@@ -189,10 +217,25 @@ const TimescalePage = () => {
             })`
         );
 
+      let domainArray = [],
+        rangeArray = [];
       cell
         .append("rect")
         .attr("width", (d: any) => d.y1 - d.y0)
-        .attr("height", (d: any) => d.x1 - d.x0)
+        .attr("height", (d: any) => {
+          console.log(d);
+          if (d.depth == 1) {
+            if (rangeArray.length > 1 && domainArray.length > 1) {
+              rangeArray.pop();
+              domainArray.pop();
+            }
+            rangeArray.push(d.x0 + paddingTop);
+            domainArray.push(d.data.end);
+            rangeArray.push(d.x1 + paddingTop);
+            domainArray.push(d.data.begin);
+          }
+          return d.x1 - d.x0;
+        })
         .attr("fill-opacity", 1)
         .attr("fill", (d: any) => d.data.color)
         .style("cursor", (d: any) => {
@@ -218,6 +261,9 @@ const TimescalePage = () => {
         .attr("y", (d: any) => (d.x1 - d.x0 + fontSize) / 2)
         .attr("text-anchor", "middle")
         .text((d: any) => d.data.name);
+      console.log(rangeArray);
+      console.log(domainArray);
+      updateYAxis(rangeArray, domainArray);
     };
 
     /**
@@ -252,6 +298,19 @@ const TimescalePage = () => {
       }
       breadcrumbs = newBreadcrumbs;
       updateBreadcrumbs();
+    }
+
+    function updateYAxis(rangeArray, domainArray) {
+      var y = d3.scaleLinear().range(rangeArray);
+      y.domain(domainArray);
+      if (domainArray[domainArray.length - 1] > 4000) {
+        domainArray.pop();
+      }
+      var yAxis = d3
+        .axisRight(y)
+        .tickValues(domainArray)
+        .tickFormat(d3.format(".2~f"));
+      gY.call(yAxis);
     }
 
     update(gTimescaleCells, data);
