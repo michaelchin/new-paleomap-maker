@@ -215,6 +215,21 @@ export default function R12nTreePage() {
           )}
         </div>
       </div>
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
+        See{" "}
+        <a
+          href="https://github.com/GPlates/gplates-web-service/blob/master/django/GWS/data/earth/Muller_etal_2019_plateID_list.csv"
+          target="_blank"
+          style={{
+            textDecoration: "underline",
+            textDecorationColor: "blue",
+            fontWeight: "bold",
+          }}
+        >
+          here
+        </a>{" "}
+        for a list of Plate IDs and their meanings.
+      </div>
       <ModelInfo modelName={modelName} modelList={modelList} />
       <h2>
         <Link href="/">Back to home</Link>
