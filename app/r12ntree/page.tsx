@@ -160,7 +160,7 @@ export default function R12nTreePage() {
               width: "100%",
               marginRight: "0px",
               marginLeft: "0px",
-              background: "lightgrey",
+              background: "lightblue",
             }}
           ></svg>
         </div>
